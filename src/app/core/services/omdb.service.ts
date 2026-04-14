@@ -3,6 +3,7 @@ import { Observable, from, of } from 'rxjs';
 import { map, catchError, switchMap } from 'rxjs/operators';
 import { SupabaseService } from './supabase.service';
 import { MovieSearchResult } from '../../suggestions/suggestions.types';
+import { environment } from '../../../environments/environment';
 
 const OMDB_KEY_STORAGE = 'ff_omdb_key';
 const OMDB_BASE = 'https://www.omdbapi.com/';
@@ -38,6 +39,9 @@ export class OmdbService {
   constructor(private supabase: SupabaseService) {}
 
   private get apiKey(): string | null {
+    // Environment key takes priority (injected at build time via GitHub secrets)
+    if (environment.omdbApiKey) return environment.omdbApiKey;
+    // Local storage fallback for local development
     return localStorage.getItem(OMDB_KEY_STORAGE);
   }
 

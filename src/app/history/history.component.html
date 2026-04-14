@@ -1,4 +1,373 @@
-<div class="page-placeholder">
-  <h1>History</h1>
-  <p>Coming soon.</p>
+<div class="hist">
+
+  <!-- Topbar -->
+  <div class="hist__topbar">
+    <button class="hist__back" (click)="goBack()" aria-label="Go back">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M12 5L7 10L12 15" stroke="#4070d0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <span class="hist__title">History</span>
+    <div class="hist__spacer"></div>
+  </div>
+
+  <!-- Loading skeletons -->
+  <div class="hist__skeletons" *ngIf="loading">
+    <div class="hist__card-skeleton skeleton" *ngFor="let i of [1,2,3,4]"></div>
+  </div>
+
+  <!-- Empty state -->
+  <div class="hist__empty" *ngIf="!loading && nights.length === 0">
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+      <rect x="6" y="9" width="28" height="22" rx="3" stroke="#4070d0" stroke-width="1.5" fill="none" opacity="0.4"/>
+      <circle cx="20" cy="20" r="6" stroke="#4070d0" stroke-width="1.2" fill="none" opacity="0.4"/>
+      <circle cx="20" cy="20" r="2" fill="#4070d0" opacity="0.4"/>
+    </svg>
+    <div class="hist__empty-title">No movie nights yet</div>
+    <div class="hist__empty-sub">Log your first movie night to get started.</div>
+    <button class="hist__empty-btn" (click)="goBack()">Back to Home</button>
+  </div>
+
+  <!-- Card list -->
+  <ng-container *ngIf="!loading && nights.length">
+    <ng-container *ngFor="let night of nights; trackBy: trackById">
+
+      <!-- ── Compact card ──────────────────────────────────────────────── -->
+      <div
+        class="hist__card"
+        [class.hist__card--expanded]="expandedId === night.id"
+        (click)="toggleExpand(night.id)"
+        [attr.aria-expanded]="expandedId === night.id"
+        role="button"
+        tabindex="0"
+        (keydown.enter)="toggleExpand(night.id)"
+        (keydown.space)="$event.preventDefault(); toggleExpand(night.id)"
+      >
+        <!-- Poster -->
+        <div class="hist__card-poster-wrap">
+          <img
+            *ngIf="night.movie.posterUrl"
+            [src]="night.movie.posterUrl"
+            [alt]="night.movie.title"
+            class="hist__card-poster"
+          />
+          <div *ngIf="!night.movie.posterUrl" class="hist__card-poster hist__card-poster--placeholder"></div>
+        </div>
+
+        <!-- Info -->
+        <div class="hist__card-body">
+          <div class="hist__card-title">{{ night.movie.title }}</div>
+          <div class="hist__card-meta">
+            <span *ngIf="night.movie.releaseYear">{{ night.movie.releaseYear }}</span>
+            <span *ngIf="night.movie.releaseYear && night.movie.runtime" class="hist__dot">·</span>
+            <span *ngIf="night.movie.runtime">{{ night.movie.runtime }}</span>
+          </div>
+          <div class="hist__card-info">
+            {{ formatDate(night.date) }} · {{ night.hostName }}
+          </div>
+          <!-- Chips row -->
+          <div class="hist__card-chips" *ngIf="isNonEnglish(night.movie.movieLanguage) || night.watchPlatform">
+            <span
+              *ngIf="isNonEnglish(night.movie.movieLanguage)"
+              class="hist__chip hist__chip--lang"
+            >🌐 {{ primaryLanguage(night.movie.movieLanguage!) }}</span>
+            <span
+              *ngIf="night.watchPlatform"
+              class="hist__chip hist__chip--platform"
+            >{{ night.watchPlatform }}</span>
+          </div>
+        </div>
+
+        <!-- Score badge + caret -->
+        <div class="hist__card-right">
+          <div
+            *ngIf="night.avgScore !== null"
+            class="hist__score-badge"
+            [style.color]="scoreColor(night.avgScore)"
+            [style.border-color]="scoreColor(night.avgScore) + '44'"
+          >{{ night.avgScore }}</div>
+          <div *ngIf="night.avgScore === null" class="hist__score-badge hist__score-badge--empty">—</div>
+          <svg
+            class="hist__caret"
+            [class.hist__caret--open]="expandedId === night.id"
+            width="12" height="12" viewBox="0 0 12 12" fill="none"
+          >
+            <path d="M3 5L6 8L9 5" stroke="#444" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </div>
+
+      <!-- ── Expanded detail ───────────────────────────────────────────── -->
+      <div class="hist__detail" *ngIf="expandedId === night.id">
+
+        <!-- Tab bar -->
+        <div class="hist__tabs">
+          <button
+            class="hist__tab"
+            [class.hist__tab--active]="activeTab === 'details'"
+            (click)="setTab('details', night); $event.stopPropagation()"
+          >Details</button>
+          <button
+            class="hist__tab"
+            [class.hist__tab--active]="activeTab === 'trivia'"
+            (click)="setTab('trivia', night); $event.stopPropagation()"
+          >Trivia</button>
+          <button
+            class="hist__tab"
+            [class.hist__tab--active]="activeTab === 'notes'"
+            (click)="setTab('notes', night); $event.stopPropagation()"
+          >
+            Notes
+            <span class="hist__tab-count" *ngIf="notesFor(night.id).length">
+              {{ notesFor(night.id).length }}
+            </span>
+          </button>
+        </div>
+
+        <!-- ── Details tab ─────────────────────────────────────────────── -->
+        <div class="hist__tab-body" *ngIf="activeTab === 'details'" (click)="$event.stopPropagation()">
+
+          <!-- Movie block -->
+          <div class="hist__movie-block">
+            <img
+              *ngIf="night.movie.posterUrl"
+              [src]="night.movie.posterUrl"
+              [alt]="night.movie.title"
+              class="hist__detail-poster"
+            />
+            <div *ngIf="!night.movie.posterUrl" class="hist__detail-poster hist__detail-poster--placeholder"></div>
+            <div class="hist__detail-info">
+              <div class="hist__detail-title">{{ night.movie.title }}</div>
+              <div class="hist__detail-year-country" *ngIf="night.movie.releaseYear || night.movie.country">
+                <span *ngIf="night.movie.country">{{ night.movie.country }}</span>
+                <span *ngIf="night.movie.country && night.movie.releaseYear"> · </span>
+                <span *ngIf="night.movie.releaseYear">{{ night.movie.releaseYear }}</span>
+                <span *ngIf="night.movie.runtime"> · {{ night.movie.runtime }}</span>
+              </div>
+              <div class="hist__detail-genre" *ngIf="night.movie.genre">{{ night.movie.genre }}</div>
+              <div class="hist__detail-dir" *ngIf="night.movie.director">Dir. {{ night.movie.director!.split(', ')[0] }}</div>
+              <div class="hist__detail-imdb" *ngIf="night.movie.imdbRating">
+                <span class="hist__imdb-star">★</span> {{ night.movie.imdbRating }} IMDb
+              </div>
+              <a
+                *ngIf="night.movie.imdbUrl"
+                [href]="night.movie.imdbUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hist__imdb-link"
+                (click)="$event.stopPropagation()"
+              >View on IMDb ↗</a>
+            </div>
+          </div>
+
+          <!-- Group average -->
+          <div class="hist__group-score" *ngIf="night.avgScore !== null">
+            <span class="hist__group-score-lbl">Group avg</span>
+            <span class="hist__group-score-val" [style.color]="scoreColor(night.avgScore)">
+              {{ night.avgScore }}<span class="hist__group-score-denom">/10</span>
+            </span>
+          </div>
+
+          <!-- Event info -->
+          <div class="hist__section">
+            <div class="hist__section-row">
+              <span class="hist__section-lbl">📅 Date</span>
+              <span class="hist__section-val">{{ formatDate(night.date) }}</span>
+            </div>
+            <div class="hist__section-row">
+              <span class="hist__section-lbl">🎬 Host</span>
+              <span class="hist__section-val">{{ night.hostName }}</span>
+            </div>
+          </div>
+
+          <!-- Viewing setup -->
+          <div class="hist__section" *ngIf="night.watchPlatform || (night.cutVersion && night.cutVersion !== 'Standard') || night.subtitleOption || night.viewingEnvironment.length">
+            <div class="hist__section-header">Viewing Setup</div>
+            <div class="hist__chips-wrap">
+              <span class="hist__chip hist__chip--blue" *ngIf="night.watchPlatform">{{ night.watchPlatform }}</span>
+              <span class="hist__chip hist__chip--blue" *ngIf="night.cutVersion && night.cutVersion !== 'Standard'">{{ night.cutVersion }}</span>
+              <span class="hist__chip hist__chip--blue" *ngIf="night.subtitleOption">{{ night.subtitleOption }}</span>
+              <span class="hist__chip hist__chip--blue" *ngFor="let env of night.viewingEnvironment">{{ env }}</span>
+            </div>
+          </div>
+
+          <!-- Food -->
+          <div class="hist__section" *ngIf="night.foodMain || night.foodSides || night.foodDrinks">
+            <div class="hist__section-header">Food & Drinks</div>
+            <div class="hist__section-row" *ngIf="night.foodMain">
+              <span class="hist__section-lbl">🍽 Main</span>
+              <span class="hist__section-val">{{ night.foodMain }}</span>
+            </div>
+            <div class="hist__section-row" *ngIf="night.foodSides">
+              <span class="hist__section-lbl">🍿 Sides</span>
+              <span class="hist__section-val">{{ night.foodSides }}</span>
+            </div>
+            <div class="hist__section-row" *ngIf="night.foodDrinks">
+              <span class="hist__section-lbl">🥂 Drinks</span>
+              <span class="hist__section-val">{{ night.foodDrinks }}</span>
+            </div>
+          </div>
+
+          <!-- Photo -->
+          <div class="hist__photo-wrap" *ngIf="night.photoUrl">
+            <img [src]="night.photoUrl" alt="Movie night photo" class="hist__photo" (click)="$event.stopPropagation()"/>
+          </div>
+
+          <!-- Attendee scores -->
+          <div class="hist__section">
+            <div class="hist__section-header">Ratings</div>
+            <div class="hist__attendees">
+              <div
+                *ngFor="let a of night.attendees; trackBy: trackByMemberId"
+                class="hist__attendee"
+                [class.hist__attendee--absent]="!a.attended"
+              >
+                <span
+                  class="hist__attendee-avatar"
+                  [style.background-color]="a.attended ? a.memberColor : 'transparent'"
+                  [style.border-color]="a.memberColor"
+                  [style.color]="a.attended ? '#0d0d0d' : a.memberColor"
+                >{{ a.memberName[0] }}</span>
+                <div class="hist__attendee-info">
+                  <span class="hist__attendee-name">{{ a.memberName }}</span>
+                  <div class="hist__attendee-meta">
+                    <span *ngIf="!a.attended" class="hist__attendee-absent-lbl">absent</span>
+                    <span *ngIf="a.attended && a.firstWatch === true" class="hist__fw-badge">1st</span>
+                    <span *ngIf="a.attended && a.firstWatch === false" class="hist__rw-badge">re</span>
+                  </div>
+                </div>
+                <div class="hist__attendee-score">
+                  <span
+                    *ngIf="a.score !== null"
+                    [style.color]="scoreColor(a.score)"
+                  >{{ a.score }}</span>
+                  <span *ngIf="a.score === null && a.attended" class="hist__unrated">—</span>
+                </div>
+              </div>
+            </div>
+            <!-- Review notes from attendees -->
+            <ng-container *ngFor="let a of night.attendees; trackBy: trackByMemberId">
+              <div class="hist__review-note" *ngIf="a.reviewNote">
+                <span class="hist__review-note-who">{{ a.memberName }}:</span>
+                {{ a.reviewNote }}
+              </div>
+            </ng-container>
+          </div>
+
+        </div>
+
+        <!-- ── Trivia tab ──────────────────────────────────────────────── -->
+        <div class="hist__tab-body" *ngIf="activeTab === 'trivia'" (click)="$event.stopPropagation()">
+
+          <div class="hist__tab-loading" *ngIf="isTriviaLoading(night.movie.id)">
+            <div class="skeleton hist__fact-skeleton" *ngFor="let i of [1,2,3]"></div>
+          </div>
+
+          <div class="hist__trivia-empty" *ngIf="!isTriviaLoading(night.movie.id) && triviaFor(night.movie.id).length === 0">
+            <div class="hist__empty-icon-sm">🎬</div>
+            <div class="hist__empty-label">No trivia yet for this movie.</div>
+          </div>
+
+          <div class="hist__facts" *ngIf="!isTriviaLoading(night.movie.id) && triviaFor(night.movie.id).length">
+            <div *ngFor="let fact of triviaFor(night.movie.id); trackBy: trackById" class="hist__fact">
+              <div class="hist__fact-text">{{ fact.factText }}</div>
+              <a
+                *ngIf="fact.sourceUrl"
+                [href]="fact.sourceUrl"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="hist__fact-source"
+                (click)="$event.stopPropagation()"
+              >{{ fact.sourceLabel || 'Source' }} ↗</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Notes tab ───────────────────────────────────────────────── -->
+        <div class="hist__tab-body" *ngIf="activeTab === 'notes'" (click)="$event.stopPropagation()">
+
+          <div class="hist__tab-loading" *ngIf="isNotesLoading(night.id)">
+            <div class="skeleton hist__note-skeleton" *ngFor="let i of [1,2]"></div>
+          </div>
+
+          <ng-container *ngIf="!isNotesLoading(night.id)">
+
+            <!-- Notes list -->
+            <div class="hist__notes-empty" *ngIf="notesFor(night.id).length === 0">
+              <div class="hist__empty-icon-sm">💬</div>
+              <div class="hist__empty-label">No notes yet. Add the first one below.</div>
+            </div>
+
+            <div class="hist__notes-list" *ngIf="notesFor(night.id).length">
+              <div *ngFor="let note of notesFor(night.id); trackBy: trackById" class="hist__note">
+                <span
+                  class="hist__note-avatar"
+                  [style.background-color]="note.memberColor"
+                >{{ note.memberName[0] }}</span>
+                <div class="hist__note-content">
+                  <div class="hist__note-header">
+                    <span class="hist__note-who">{{ note.memberName }}</span>
+                    <span class="hist__note-date">{{ formatNoteDate(note.createdAt) }}</span>
+                    <span class="hist__note-edited" *ngIf="note.isEdited">edited</span>
+                  </div>
+                  <!-- View mode -->
+                  <div *ngIf="editingNoteId !== note.id">
+                    <div class="hist__note-text">{{ note.noteText }}</div>
+                    <button
+                      *ngIf="isMyNote(note)"
+                      class="hist__note-edit-btn"
+                      (click)="startEditNote(note)"
+                    >Edit</button>
+                  </div>
+                  <!-- Edit mode -->
+                  <div *ngIf="editingNoteId === note.id" class="hist__note-edit-form">
+                    <textarea
+                      class="hist__note-textarea"
+                      rows="3"
+                      [(ngModel)]="editNoteText"
+                    ></textarea>
+                    <div class="hist__note-edit-actions">
+                      <button class="hist__note-cancel" (click)="cancelEditNote()">Cancel</button>
+                      <button
+                        class="hist__note-save"
+                        [disabled]="!editNoteText.trim() || editSubmitting"
+                        (click)="saveEditNote(night)"
+                      >
+                        <span *ngIf="!editSubmitting">Save</span>
+                        <span *ngIf="editSubmitting">Saving…</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Add note form -->
+            <div class="hist__add-note" *ngIf="!editingNoteId">
+              <textarea
+                class="hist__note-textarea"
+                rows="2"
+                placeholder="Share a thought about this night…"
+                [(ngModel)]="newNoteText"
+              ></textarea>
+              <button
+                class="hist__add-note-btn"
+                [disabled]="!newNoteText.trim() || noteSubmitting"
+                (click)="addNote(night)"
+              >
+                <span *ngIf="!noteSubmitting">Post</span>
+                <span *ngIf="noteSubmitting">Posting…</span>
+              </button>
+            </div>
+
+          </ng-container>
+        </div>
+
+      </div>
+      <!-- end expanded detail -->
+
+    </ng-container>
+  </ng-container>
+
+  <div class="hist__bottom-pad"></div>
 </div>

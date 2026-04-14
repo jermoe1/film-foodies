@@ -1,1 +1,616 @@
-// placeholder styles — replace when implementing
+// ── History ───────────────────────────────────────────────────────────────────
+
+:host {
+  display: block;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: #0d0d0d;
+  overflow-y: auto;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.hist { display: flex; flex-direction: column; }
+
+// ── Topbar ────────────────────────────────────────────────────────────────────
+
+.hist__topbar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  padding: 44px 16px 12px;
+  background: #0d0d0d;
+  z-index: 10;
+}
+
+.hist__back {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  &:focus-visible { outline: 2px solid #4070d0; outline-offset: 2px; }
+}
+
+.hist__title {
+  flex: 1;
+  text-align: center;
+  font-family: Georgia, serif;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #4070d0;
+  letter-spacing: 0.5px;
+}
+
+.hist__spacer { width: 36px; flex-shrink: 0; }
+
+// ── Loading / empty ───────────────────────────────────────────────────────────
+
+.hist__skeletons { padding: 8px 16px; display: flex; flex-direction: column; gap: 8px; }
+
+.hist__card-skeleton { height: 82px; border-radius: 10px; }
+
+.hist__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 60px 32px 24px;
+  text-align: center;
+}
+
+.hist__empty-title {
+  font-family: Georgia, serif;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #e0e0e0;
+}
+
+.hist__empty-sub { font-size: 0.8125rem; color: #555; line-height: 1.5; }
+
+.hist__empty-btn {
+  margin-top: 12px;
+  padding: 10px 24px;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  color: #888;
+  font-size: 0.875rem;
+  cursor: pointer;
+  &:active { background: #222; }
+  &:focus-visible { outline: 2px solid #4070d0; outline-offset: 2px; }
+}
+
+// ── Compact card ──────────────────────────────────────────────────────────────
+
+.hist__card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px 10px 16px;
+  border-bottom: 1px solid #181818;
+  cursor: pointer;
+  position: relative;
+  user-select: none;
+
+  &:active { background: #111; }
+  &:focus-visible { outline: 2px solid #4070d0; outline-offset: -2px; }
+  &--expanded { background: #111; border-bottom-color: transparent; }
+}
+
+.hist__card-poster-wrap { flex-shrink: 0; }
+
+.hist__card-poster {
+  width: 46px; height: 68px;
+  border-radius: 4px;
+  object-fit: cover;
+  object-position: top;
+
+  &--placeholder {
+    width: 46px; height: 68px;
+    border-radius: 4px;
+    background: #222;
+  }
+}
+
+.hist__card-body { flex: 1; min-width: 0; }
+
+.hist__card-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #e8e8e8;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hist__card-meta {
+  font-size: 0.6875rem;
+  color: #666;
+  margin-top: 2px;
+}
+
+.hist__dot { margin: 0 3px; }
+
+.hist__card-info {
+  font-size: 0.625rem;
+  color: #555;
+  margin-top: 3px;
+}
+
+.hist__card-chips {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-top: 5px;
+}
+
+.hist__chip {
+  font-size: 0.5625rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  padding: 2px 6px;
+  border-radius: 8px;
+
+  &--lang {
+    background: rgba(60, 80, 180, 0.12);
+    border: 1px solid rgba(60, 80, 180, 0.22);
+    color: #6080d0;
+  }
+
+  &--platform {
+    background: rgba(100, 100, 100, 0.12);
+    border: 1px solid #2a2a2a;
+    color: #666;
+  }
+
+  &--blue {
+    background: rgba(60, 80, 180, 0.1);
+    border: 1px solid rgba(60, 80, 180, 0.2);
+    color: #6080d0;
+  }
+}
+
+.hist__card-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.hist__score-badge {
+  font-size: 0.875rem;
+  font-weight: 700;
+  border: 1px solid;
+  border-radius: 6px;
+  padding: 2px 7px;
+  min-width: 36px;
+  text-align: center;
+
+  &--empty { color: #333; border-color: #222; }
+}
+
+.hist__caret {
+  transition: transform 0.2s;
+  &--open { transform: rotate(180deg); }
+}
+
+// ── Expanded detail ───────────────────────────────────────────────────────────
+
+.hist__detail {
+  background: #0e0e0e;
+  border-bottom: 1px solid #222;
+}
+
+// ── Tab bar ───────────────────────────────────────────────────────────────────
+
+.hist__tabs {
+  display: flex;
+  border-bottom: 1px solid #1e1e1e;
+}
+
+.hist__tab {
+  flex: 1;
+  padding: 11px 4px;
+  background: none;
+  border: none;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #555;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s, border-color 0.15s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  &--active { color: #4070d0; border-bottom-color: #4070d0; }
+  &:focus-visible { outline: 2px solid #4070d0; outline-offset: -2px; }
+}
+
+.hist__tab-count {
+  font-size: 0.5625rem;
+  background: rgba(64, 112, 208, 0.2);
+  border: 1px solid rgba(64, 112, 208, 0.3);
+  color: #4070d0;
+  border-radius: 10px;
+  padding: 1px 5px;
+}
+
+// ── Tab body ──────────────────────────────────────────────────────────────────
+
+.hist__tab-body { padding: 16px 16px 8px; }
+
+.hist__tab-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+}
+
+.hist__fact-skeleton,
+.hist__note-skeleton { height: 52px; border-radius: 6px; }
+
+// ── Movie block (Details tab) ─────────────────────────────────────────────────
+
+.hist__movie-block {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.hist__detail-poster {
+  width: 72px; height: 108px;
+  border-radius: 6px;
+  object-fit: cover;
+  object-position: top;
+  flex-shrink: 0;
+
+  &--placeholder { background: #252525; width: 72px; height: 108px; border-radius: 6px; }
+}
+
+.hist__detail-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.hist__detail-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #e8e8e8;
+  line-height: 1.3;
+}
+
+.hist__detail-year-country,
+.hist__detail-genre,
+.hist__detail-dir { font-size: 0.6875rem; color: #777; }
+
+.hist__detail-imdb { font-size: 0.6875rem; color: #d4a03a; }
+.hist__imdb-star { color: #d4a03a; }
+
+.hist__imdb-link {
+  font-size: 0.625rem;
+  color: #4070d0;
+  text-decoration: none;
+  margin-top: 2px;
+  &:hover { text-decoration: underline; }
+}
+
+// ── Group average ─────────────────────────────────────────────────────────────
+
+.hist__group-score {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-bottom: 14px;
+  padding: 10px 14px;
+  background: #161616;
+  border: 1px solid #222;
+  border-radius: 8px;
+}
+
+.hist__group-score-lbl {
+  font-size: 0.6875rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+}
+
+.hist__group-score-val {
+  font-size: 2rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.hist__group-score-denom { font-size: 0.875rem; color: #555; font-weight: 400; }
+
+// ── Section rows ──────────────────────────────────────────────────────────────
+
+.hist__section { margin-bottom: 14px; }
+
+.hist__section-header {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #4070d0;
+  margin-bottom: 8px;
+}
+
+.hist__section-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 5px 0;
+  border-bottom: 1px solid #181818;
+  gap: 12px;
+  &:last-child { border-bottom: none; }
+}
+
+.hist__section-lbl { font-size: 0.75rem; color: #666; flex-shrink: 0; }
+.hist__section-val { font-size: 0.75rem; color: #ccc; text-align: right; }
+
+.hist__chips-wrap { display: flex; flex-wrap: wrap; gap: 5px; }
+
+// ── Photo ─────────────────────────────────────────────────────────────────────
+
+.hist__photo-wrap { margin-bottom: 14px; }
+
+.hist__photo {
+  width: 100%;
+  border-radius: 8px;
+  object-fit: cover;
+  max-height: 240px;
+  display: block;
+}
+
+// ── Attendees / ratings ───────────────────────────────────────────────────────
+
+.hist__attendees { display: flex; flex-direction: column; gap: 0; }
+
+.hist__attendee {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-bottom: 1px solid #181818;
+
+  &:last-of-type { border-bottom: none; }
+  &--absent { opacity: 0.4; }
+}
+
+.hist__attendee-avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  border: 2px solid;
+  display: flex; align-items: center; justify-content: center;
+  font-family: Georgia, serif;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.hist__attendee-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hist__attendee-name { font-size: 0.8125rem; color: #e0e0e0; }
+
+.hist__attendee-meta { display: flex; gap: 4px; }
+
+.hist__attendee-absent-lbl {
+  font-size: 0.5625rem;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.hist__fw-badge,
+.hist__rw-badge {
+  font-size: 0.5625rem;
+  font-weight: 700;
+  padding: 1px 5px;
+  border-radius: 8px;
+}
+
+.hist__fw-badge {
+  background: rgba(74, 154, 90, 0.15);
+  border: 1px solid rgba(74, 154, 90, 0.3);
+  color: #4a9a5a;
+}
+
+.hist__rw-badge {
+  background: rgba(100, 100, 100, 0.12);
+  border: 1px solid #2a2a2a;
+  color: #666;
+}
+
+.hist__attendee-score {
+  font-size: 1rem;
+  font-weight: 700;
+  min-width: 32px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.hist__unrated { color: #333; }
+
+.hist__review-note {
+  font-size: 0.6875rem;
+  color: #666;
+  line-height: 1.5;
+  padding: 6px 0;
+  border-top: 1px solid #181818;
+  font-style: italic;
+}
+
+.hist__review-note-who {
+  font-weight: 600;
+  color: #555;
+  font-style: normal;
+  margin-right: 4px;
+}
+
+// ── Trivia / empty ────────────────────────────────────────────────────────────
+
+.hist__trivia-empty,
+.hist__notes-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 24px 16px;
+  text-align: center;
+}
+
+.hist__empty-icon-sm { font-size: 1.5rem; opacity: 0.5; }
+
+.hist__empty-label { font-size: 0.8125rem; color: #555; }
+
+.hist__facts { display: flex; flex-direction: column; gap: 12px; }
+
+.hist__fact {
+  background: #161616;
+  border: 1px solid #222;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.hist__fact-text { font-size: 0.8125rem; color: #ccc; line-height: 1.5; }
+
+.hist__fact-source {
+  display: inline-block;
+  margin-top: 6px;
+  font-size: 0.625rem;
+  color: #4070d0;
+  text-decoration: none;
+  &:hover { text-decoration: underline; }
+}
+
+// ── Notes ─────────────────────────────────────────────────────────────────────
+
+.hist__notes-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 16px; }
+
+.hist__note { display: flex; gap: 10px; }
+
+.hist__note-avatar {
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: Georgia, serif;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #0d0d0d;
+  flex-shrink: 0;
+}
+
+.hist__note-content { flex: 1; min-width: 0; }
+
+.hist__note-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+  flex-wrap: wrap;
+}
+
+.hist__note-who { font-size: 0.75rem; font-weight: 600; color: #aaa; }
+
+.hist__note-date { font-size: 0.625rem; color: #555; }
+
+.hist__note-edited {
+  font-size: 0.5625rem;
+  color: #444;
+  font-style: italic;
+}
+
+.hist__note-text { font-size: 0.8125rem; color: #ccc; line-height: 1.5; }
+
+.hist__note-edit-btn {
+  margin-top: 4px;
+  font-size: 0.625rem;
+  color: #555;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  padding: 0;
+  &:focus-visible { outline: 2px solid #4070d0; outline-offset: 2px; border-radius: 2px; }
+}
+
+.hist__note-edit-form { display: flex; flex-direction: column; gap: 6px; }
+
+.hist__note-textarea {
+  width: 100%;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  padding: 8px 10px;
+  color: #e0e0e0;
+  font-size: 0.8125rem;
+  font-family: inherit;
+  resize: vertical;
+  outline: none;
+  &::placeholder { color: #3a3a3a; }
+  &:focus { border-color: rgba(64, 112, 208, 0.35); }
+}
+
+.hist__note-edit-actions { display: flex; gap: 8px; }
+
+.hist__note-cancel {
+  padding: 6px 14px;
+  background: transparent;
+  border: 1px solid #2a2a2a;
+  border-radius: 6px;
+  color: #666;
+  font-size: 0.75rem;
+  cursor: pointer;
+  &:active { background: #1a1a1a; }
+}
+
+.hist__note-save {
+  flex: 1;
+  padding: 6px 14px;
+  background: rgba(64, 112, 208, 0.1);
+  border: 1px solid rgba(64, 112, 208, 0.3);
+  border-radius: 6px;
+  color: #4070d0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  &:disabled { opacity: 0.4; cursor: default; }
+  &:focus-visible { outline: 2px solid #4070d0; outline-offset: 2px; }
+}
+
+// ── Add note form ─────────────────────────────────────────────────────────────
+
+.hist__add-note { display: flex; flex-direction: column; gap: 8px; }
+
+.hist__add-note-btn {
+  align-self: flex-end;
+  padding: 7px 18px;
+  background: rgba(64, 112, 208, 0.1);
+  border: 1px solid rgba(64, 112, 208, 0.3);
+  border-radius: 6px;
+  color: #4070d0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  &:disabled { opacity: 0.4; cursor: default; }
+  &:focus-visible { outline: 2px solid #4070d0; outline-offset: 2px; }
+}
+
+.hist__bottom-pad { height: 36px; }

@@ -26,6 +26,21 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Write production environment file
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          OMDB_API_KEY: ${{ secrets.OMDB_API_KEY }}
+        run: |
+          cat > src/environments/environment.prod.ts << EOF
+          export const environment = {
+            production: true,
+            supabaseUrl: '${SUPABASE_URL}',
+            supabaseAnonKey: '${SUPABASE_ANON_KEY}',
+            omdbApiKey: '${OMDB_API_KEY}',
+          };
+          EOF
+
       - name: Build Angular app
         # --base-href must match the GitHub Pages repo path: /film-foodies/
         # HashLocationStrategy means URLs are /#/route — no server-side routing needed

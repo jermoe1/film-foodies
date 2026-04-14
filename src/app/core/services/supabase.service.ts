@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import { environment } from '../../../environments/environment';
 
 const STORAGE_KEY = 'ff_supabase_config';
 
@@ -13,8 +14,7 @@ export class SupabaseService {
 
   /**
    * Initialize the Supabase client with URL and anon key, then persist to local storage.
-   * Called from the in-app config screen (Settings > API Keys).
-   * Keys are NEVER committed to the repo — stored in browser local storage only.
+   * Called from the in-app config screen (Settings > API Keys) for local dev overrides.
    */
   initialize(url: string, anonKey: string): void {
     this.client = createClient(url, anonKey);
@@ -22,10 +22,19 @@ export class SupabaseService {
   }
 
   /**
-   * Attempt to restore the Supabase client from a previously saved config in local storage.
-   * Called once at app startup (AppComponent.ngOnInit).
+   * Attempt to initialize the Supabase client. Priority order:
+   * 1. Baked-in environment credentials (set at build time via GitHub secrets)
+   * 2. Credentials previously saved to local storage via the Settings screen
+   * Returns true if a client was successfully created.
    */
   tryInitFromStorage(): boolean {
+    // 1. Environment credentials (injected at build time — never in git)
+    if (environment.supabaseUrl && environment.supabaseAnonKey) {
+      this.client = createClient(environment.supabaseUrl, environment.supabaseAnonKey);
+      return true;
+    }
+
+    // 2. Local storage fallback (used during local development)
     const stored = localStorage.getItem(STORAGE_KEY);
     if (!stored) return false;
     try {
@@ -54,6 +63,7 @@ export class SupabaseService {
 
   /**
    * Clear stored config (e.g. for reset / re-configuration).
+   * Note: environment-baked credentials are unaffected — only localStorage is cleared.
    */
   clearConfig(): void {
     this.client = null;
