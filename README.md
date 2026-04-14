@@ -118,11 +118,11 @@ film-foodies/
 | SelectMemberModule | `/select-member` | Name picker; restores from local storage on startup; redirects to here if no member saved |
 | AdminModule | `/admin` | Connection, appearance (6 themes), passcode (SHA-256), members CRUD + reorder, app info |
 | MovieNightsModule | `/movie-night` | OMDB search, ?suggestion= pre-fill, host picker, date, attendee 2×3 grid, food fields, advanced options |
+| RatingsModule | `/rate` | 3-step flow: first-watch flag → numeric score → review note + tag chips; dynamic rate bar on home |
 
 ### 🔲 Remaining Modules (stub — "Coming soon")
 | Module | Route | Key complexity |
 |---|---|---|
-| RatingsModule | `/rate` | 4-step flow, first-watch flag, poster animation |
 | HistoryModule | `/history` | Tap-to-expand cards, 3-tab detail (Details / Trivia / Notes) |
 | StatsModule | `/stats` | Charts, "Split the Room", personal vs group toggle |
 | DiscoveryModule | `/discover` | Claude API integration, member_ignores, weekly refresh |
