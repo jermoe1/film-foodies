@@ -1,0 +1,6 @@
+// App shell — full viewport, no overflow
+:host {
+  display: block;
+  height: 100vh;
+  overflow: hidden;
+}

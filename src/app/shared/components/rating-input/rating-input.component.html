@@ -1,0 +1,38 @@
+<ng-container [ngSwitch]="mode">
+
+  <!-- ============================================================
+       Numeric mode: fully implemented (0.0 – 10.0, one decimal)
+       ============================================================ -->
+  <ng-container *ngSwitchCase="'numeric'">
+    <input
+      type="number"
+      min="0"
+      max="10"
+      step="0.1"
+      [formControl]="control"
+      [attr.aria-label]="'Rating (0.0 to 10.0)'"
+      class="rating-numeric"
+      placeholder="0.0"
+    />
+    <span class="rating-numeric__suffix">/10</span>
+  </ng-container>
+
+  <!-- ============================================================
+       Stars — whole (stubbed)
+       TODO: implement if group switches to star rating
+       ============================================================ -->
+  <ng-container *ngSwitchCase="'stars-whole'">
+    <!-- TODO: implement if group switches to star rating -->
+    <span class="rating-stub" aria-label="Star rating (not yet implemented)">★★★★★</span>
+  </ng-container>
+
+  <!-- ============================================================
+       Stars — half-step (stubbed)
+       TODO: implement if group switches to star rating
+       ============================================================ -->
+  <ng-container *ngSwitchCase="'stars-half'">
+    <!-- TODO: implement if group switches to star rating -->
+    <span class="rating-stub" aria-label="Half-star rating (not yet implemented)">★★★★½</span>
+  </ng-container>
+
+</ng-container>
