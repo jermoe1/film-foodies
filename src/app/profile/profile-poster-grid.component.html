@@ -1,0 +1,52 @@
+<div class="section-header">
+  <span class="section-label">My Ratings</span>
+  <!-- sort stub — bottom sheet not yet implemented -->
+  <button class="sort-btn" type="button" disabled>sort</button>
+</div>
+
+<!-- Loading skeleton -->
+<div *ngIf="isLoading" class="grid">
+  <div *ngFor="let i of [0,1,2,3,4,5]" class="cell skeleton"></div>
+</div>
+
+<!-- Empty state -->
+<div *ngIf="!isLoading && !hasMovies" class="empty">
+  <svg class="empty__icon" width="32" height="32" viewBox="0 0 24 24" fill="none">
+    <rect x="2" y="4" width="20" height="16" rx="2" stroke="#5a5a5a" stroke-width="1.5"/>
+    <path d="M2 8h20" stroke="#5a5a5a" stroke-width="1.5"/>
+    <circle cx="6" cy="6" r="0.8" fill="#5a5a5a"/>
+    <circle cx="9" cy="6" r="0.8" fill="#5a5a5a"/>
+    <path d="M10 13l3-2 3 2v3H10v-3z" stroke="#5a5a5a" stroke-width="1.2" fill="none"/>
+  </svg>
+  <p class="empty__text">No ratings yet</p>
+  <p class="empty__sub">Tap Rate on the home screen to get started</p>
+  <a class="empty__cta" routerLink="/">Go to Home</a>
+</div>
+
+<!-- Grid -->
+<div *ngIf="!isLoading && hasMovies" class="grid">
+  <div
+    *ngFor="let m of movies; trackBy: trackByTitle"
+    class="cell"
+  >
+    <!-- Poster image -->
+    <img
+      *ngIf="m.posterUrl"
+      [src]="m.posterUrl"
+      [alt]="m.title"
+      class="cell__img"
+    />
+    <!-- Placeholder gradient if no poster -->
+    <div *ngIf="!m.posterUrl" class="cell__placeholder"></div>
+
+    <!-- First-watch badge -->
+    <span *ngIf="m.firstWatch === true"  class="badge badge--first">1st</span>
+    <span *ngIf="m.firstWatch === false" class="badge badge--rewatch">re</span>
+
+    <!-- Bottom overlay -->
+    <div class="cell__overlay">
+      <span class="cell__title">{{ m.title }}</span>
+      <span class="cell__score">{{ m.score.toFixed(1) }}</span>
+    </div>
+  </div>
+</div>

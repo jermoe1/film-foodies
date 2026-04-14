@@ -318,4 +318,141 @@ film-foodies/
 
 ---
 
+## Browser & Platform Support
+
+### Supported Browsers
+| Browser | Platforms |
+|---|---|
+| Firefox | Android, iOS, Windows, macOS |
+| Chrome | Android, iOS, Windows, macOS |
+| Safari | iOS, iPadOS, macOS |
+
+All three browsers must be tested on all listed platforms before any feature is considered complete. No browser-specific workarounds should be silently applied — if a fix is needed for one browser it should be documented here.
+
+### Supported Form Factors
+| Form Factor | Examples |
+|---|---|
+| Phone (portrait primary) | Pixel, Samsung Galaxy, iPhone |
+| Tablet | iPad, Android tablets |
+| Laptop | 13–15" screens, trackpad navigation |
+| Desktop | 24"+ screens, mouse navigation |
+
+**Phone is the primary design target.** All layout decisions default to mobile-first. Tablet, laptop, and desktop are enhanced breakpoints — they must work well but they are not the primary use case.
+
+### Responsive Breakpoints
+
+Use these breakpoints consistently across all components:
+
+| Name | Min-width | Targets |
+|---|---|---|
+| `sm` (phone) | 0px | Default — all mobile phones |
+| `md` (tablet) | 768px | iPad, Android tablets |
+| `lg` (laptop) | 1024px | Laptops, small desktop |
+| `xl` (desktop) | 1280px | Large desktop monitors |
+
+### Browser-Specific Considerations
+
+**Safari on iOS:**
+- `100dvh` is supported from iOS 15.4+ — use the `100vh` fallback for older iOS versions
+- `env(safe-area-inset-bottom)` is well-supported on iOS and essential for iPhone home indicator bar
+- Safari does NOT support some CSS features until later versions — always check caniuse.com before using newer CSS properties
+- Web Storage (localStorage) works normally in Safari unless the user has "Prevent Cross-Site Tracking" set to block all storage — acceptable limitation for this app
+- Safari on iOS does not show a bottom browser nav bar in the same way Android does, but `env(safe-area-inset-bottom)` is still needed for the iPhone home indicator (typically 34px on modern iPhones)
+
+**Firefox on Android:**
+- Bottom browser nav bar overlaps content when `100vh` is used — fixed by `100dvh` + `env(safe-area-inset-bottom)` (see section below)
+- Firefox on desktop has no equivalent issue
+
+**Chrome on Android:**
+- Same bottom nav bar issue as Firefox Android — same fix applies
+- Chrome on iOS uses Safari's WebKit rendering engine under the hood (Apple requirement) so behaves like Safari on iOS
+
+**Safari on macOS / Firefox and Chrome on desktop:**
+- No mobile nav bar concerns
+- Full viewport is available — `100vh` and `100dvh` behave identically
+- Mouse and trackpad navigation — ensure all interactive elements have visible focus states (`:focus-visible` CSS) for keyboard/trackpad users
+- The app should be usable at any desktop window size, not just full-screen
+
+### Desktop & Tablet Layout Adjustments
+
+The app is built mobile-first but should adapt gracefully at larger sizes:
+
+- **Home screen panels:** On tablet (≥768px), consider allowing the 3 panels to be wider with more padding. On desktop (≥1024px), constrain the app to a max-width of ~480px centered on screen — the app should not stretch to fill a 27" monitor awkwardly.
+- **Hamburger menu:** On desktop, the hamburger drawer can slide in from the right as a sidebar rather than sliding up from the bottom
+- **Poster grid (My Profile):** 3 columns on phone, 4–5 columns on tablet, stays 3 within the constrained max-width on desktop
+- **Forms (Movie Night, Suggest, Bulk Import):** Single column on phone, can use 2-column layout on tablet and desktop for field groupings
+- **Max-width container:** Wrap the entire app in a `max-width: 480px; margin: 0 auto;` container on screens wider than 768px so it doesn't look like a stretched phone app on desktop
+
+### Focus & Accessibility
+
+On laptop and desktop, users navigate with keyboard and trackpad. Ensure:
+- All interactive elements (buttons, links, inputs) have visible `:focus-visible` outlines
+- Focus outline color: gold `#d4a03a` at 2px solid, offset 2px — visible on dark backgrounds
+- Tab order follows visual reading order (top to bottom, left to right)
+- No focus traps except intentional modal dialogs
+
+---
+
+## Mobile Browser Safe Area — Critical CSS Fix
+
+**Problem:** On Firefox and Chrome for Android, the browser's bottom navigation bar sits on top of web content. The CSS `100vh` unit does not account for this bar — it measures the full viewport height including the area hidden behind the browser chrome. This causes the Rate bar on the home screen to be partially or fully obscured without the user scrolling to dismiss the browser nav bar first.
+
+**This must be applied from day one — not retrofitted later.** Any screen with a sticky bottom element is affected.
+
+### Required fix in `src/index.html`
+
+```html
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+```
+
+The `viewport-fit=cover` attribute is required to opt in to the safe area inset system. Without it, `env(safe-area-inset-bottom)` returns `0` on iOS and some Android browsers.
+
+### Required fix in every full-screen component
+
+```scss
+.screen {
+  height: 100vh;           /* Fallback for older browsers */
+  height: 100dvh;          /* Dynamic viewport height — adjusts when browser UI appears/disappears */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+```
+
+### Required fix for any sticky bottom element (Rate bar, submit buttons, drawers)
+
+```scss
+.rate-bar {
+  flex-shrink: 0;
+  margin-bottom: env(safe-area-inset-bottom, 0px);
+}
+```
+
+### Why each piece matters
+
+- **`100dvh`** — Dynamic viewport height. Recalculates when the browser nav bar appears or disappears, so the screen always fits the visible area. Supported in Firefox Android 110+, Chrome Android 108+. The `100vh` fallback handles older browsers.
+- **`env(safe-area-inset-bottom)`** — CSS variable that iOS and Android expose representing the height of the system UI at the bottom (home indicator bar, gesture navigation bar, browser nav bar). Defaults to `0px` if not applicable.
+- **`viewport-fit=cover`** — Required meta tag to activate the safe area inset system in the browser.
+
+### Scope — apply this pattern to
+
+- `home.component.scss` — the `.screen` container and `.rate-bar`
+- Any full-screen route component that uses `height: 100vh`
+- The hamburger menu drawer bottom padding
+- Any bottom sheet or modal that has a fixed/sticky bottom action bar
+- Form pages (Movie Night, Suggest, Bulk Import) with a sticky submit button at the bottom
+
+### Tested Scenarios
+
+| Scenario | Status | Notes |
+|---|---|---|
+| Firefox Android — Rate bar hidden by browser nav | Fixed | `100dvh` + `env(safe-area-inset-bottom)` resolves it |
+| Chrome Android — Rate bar hidden by browser nav | Fixed | Same fix applies |
+| Safari iOS — home indicator bar overlaps bottom | Fixed | `env(safe-area-inset-bottom)` handles iPhone home indicator (34px on modern iPhones) |
+| Safari macOS — no bottom UI overlap | No issue | `100vh` and `100dvh` behave identically on desktop |
+| Firefox/Chrome desktop — no bottom UI overlap | No issue | No fix needed on desktop browsers |
+
+---
+
 *Film Foodies CONTEXT.md — keep this file updated as new decisions are made during development.*

@@ -1,0 +1,40 @@
+<!-- Loading skeleton -->
+<ng-container *ngIf="isLoading">
+  <div class="avatar skeleton"></div>
+  <div class="name-skeleton skeleton"></div>
+  <div class="pills">
+    <div class="pill skeleton" *ngFor="let i of [0,1,2,3]"></div>
+  </div>
+</ng-container>
+
+<!-- Content -->
+<ng-container *ngIf="!isLoading">
+  <div
+    class="avatar"
+    [ngStyle]="{ 'border-color': avatarColor, 'background-color': avatarColor + '22' }"
+  >
+    <span class="avatar__initial" [ngStyle]="{ color: avatarColor }">{{ initial }}</span>
+  </div>
+
+  <div class="member-name">{{ member?.first_name }}</div>
+  <div class="member-role">{{ roleSince }}</div>
+
+  <div class="pills">
+    <div class="pill">
+      <span class="pill__value">{{ stats?.watched ?? 0 }}</span>
+      <span class="pill__label">Watched</span>
+    </div>
+    <div class="pill">
+      <span class="pill__value">{{ stats?.avgScore ?? '—' }}</span>
+      <span class="pill__label">Avg Score</span>
+    </div>
+    <div class="pill">
+      <span class="pill__value">{{ stats?.suggested ?? 0 }}</span>
+      <span class="pill__label">Suggested</span>
+    </div>
+    <div class="pill">
+      <span class="pill__value">{{ stats?.hosted ?? 0 }}</span>
+      <span class="pill__label">Hosted</span>
+    </div>
+  </div>
+</ng-container>

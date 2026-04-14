@@ -1,4 +1,86 @@
-<div class="page-placeholder">
-  <h1>My Profile</h1>
-  <p>Coming soon.</p>
+<!-- Top bar -->
+<div class="topbar">
+  <button class="back-btn" type="button" (click)="goBack()">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+      <path d="M15 18l-6-6 6-6" stroke="#d4a03a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+  </button>
+  <h1 class="topbar__title">My Profile</h1>
+  <div class="topbar__spacer"></div>
 </div>
+
+<!-- No member selected -->
+<div *ngIf="!isLoading && !member" class="no-member">
+  Select your name from the home screen to view your profile.
+</div>
+
+<!-- Profile content -->
+<ng-container *ngIf="member">
+
+  <!-- Section 1: Header -->
+  <app-profile-header
+    [member]="member"
+    [stats]="headerStats"
+    [isLoading]="isLoading"
+  ></app-profile-header>
+
+  <div class="divider"></div>
+
+  <!-- Section 2: Favorite Genres -->
+  <app-profile-genre-row
+    [items]="genres"
+    [isLoading]="isLoading"
+  ></app-profile-genre-row>
+
+  <div class="divider"></div>
+
+  <!-- Section 3: Top Directors -->
+  <app-profile-director-row
+    [items]="directors"
+    [isLoading]="isLoading"
+  ></app-profile-director-row>
+
+  <div class="divider"></div>
+
+  <!-- Section 4: Top Actors -->
+  <app-profile-actor-row
+    [items]="actors"
+    [isLoading]="isLoading"
+  ></app-profile-actor-row>
+
+  <div class="divider"></div>
+
+  <!-- Section 5: Contrarian Score -->
+  <app-profile-contrarian
+    [data]="contrarian"
+    [isLoading]="isLoading"
+  ></app-profile-contrarian>
+
+  <div class="divider"></div>
+
+  <!-- Section 6: Rating Trend -->
+  <app-profile-trend-chart
+    [data]="trend"
+    [isLoading]="isLoading"
+  ></app-profile-trend-chart>
+
+  <div class="divider"></div>
+
+  <!-- Section 7: My Ratings (poster grid) -->
+  <app-profile-poster-grid
+    [movies]="ratings"
+    [isLoading]="isLoading"
+  ></app-profile-poster-grid>
+
+  <div class="divider"></div>
+
+  <!-- Section 8: My Suggestions -->
+  <app-profile-suggestions
+    [suggestions]="suggestions"
+    [isLoading]="isLoading"
+  ></app-profile-suggestions>
+
+  <!-- Bottom padding -->
+  <div class="bottom-pad"></div>
+
+</ng-container>

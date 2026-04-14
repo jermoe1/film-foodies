@@ -1,0 +1,60 @@
+<div class="section-header">
+  <span class="section-label">Rating Trend</span>
+  <span class="section-avg">avg / month</span>
+</div>
+
+<!-- Loading skeleton -->
+<div *ngIf="isLoading" class="chart-wrap skeleton"></div>
+
+<!-- Content -->
+<div *ngIf="!isLoading" class="chart-wrap">
+
+  <!-- Empty state -->
+  <div *ngIf="!hasEnoughData" class="chart-empty">
+    Rate more movies to see your trend
+  </div>
+
+  <!-- Chart -->
+  <ng-container *ngIf="hasEnoughData">
+    <svg viewBox="0 0 310 86" class="chart-svg" preserveAspectRatio="none">
+      <defs>
+        <linearGradient id="profile-chart-grad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stop-color="rgba(212,160,58,0.28)"/>
+          <stop offset="100%" stop-color="rgba(212,160,58,0)"/>
+        </linearGradient>
+      </defs>
+
+      <!-- Grid lines at score 10, 7, 4 -->
+      <line x1="0" y1="0"    x2="310" y2="0"    stroke="#1e1e1e" stroke-width="1"/>
+      <line x1="0" y1="25.8" x2="310" y2="25.8" stroke="#1e1e1e" stroke-width="1"/>
+      <line x1="0" y1="51.6" x2="310" y2="51.6" stroke="#1e1e1e" stroke-width="1"/>
+
+      <!-- Area fill -->
+      <polygon [attr.points]="areaPoints" fill="url(#profile-chart-grad)"/>
+
+      <!-- Line -->
+      <polyline
+        [attr.points]="linePoints"
+        stroke="#d4a03a"
+        stroke-width="1.8"
+        fill="none"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+
+      <!-- Data point circles -->
+      <circle
+        *ngFor="let pt of chartPoints"
+        [attr.cx]="pt.x"
+        [attr.cy]="pt.y"
+        r="2.5"
+        fill="#d4a03a"
+      />
+    </svg>
+
+    <!-- Month labels (space-between matches evenly distributed SVG x positions) -->
+    <div class="chart-months">
+      <span *ngFor="let lbl of monthLabels">{{ lbl.label }}</span>
+    </div>
+  </ng-container>
+</div>

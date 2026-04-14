@@ -1,0 +1,23 @@
+<div class="row-header">
+  <span class="row-label">Top Actors</span>
+  <a class="row-more" routerLink="/stats">see more</a>
+</div>
+
+<!-- Loading skeleton -->
+<div *ngIf="isLoading" class="cards">
+  <div class="card skeleton" *ngFor="let i of [0,1,2]"></div>
+</div>
+
+<!-- Empty state -->
+<div *ngIf="!isLoading && !items.length" class="empty">
+  Rate some movies to see your favorites
+</div>
+
+<!-- Cards -->
+<div *ngIf="!isLoading && items.length" class="cards">
+  <div class="card" *ngFor="let item of items; let i = index">
+    <div class="card__rank">#{{ i + 1 }}</div>
+    <div class="card__name">{{ item.name }}</div>
+    <div class="card__meta">avg {{ item.avgScore | number:'1.1-1' }} · {{ item.filmCount }} films</div>
+  </div>
+</div>

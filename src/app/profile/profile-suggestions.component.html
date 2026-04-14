@@ -1,0 +1,43 @@
+<div class="section-header">
+  <span class="section-label">My Suggestions</span>
+  <a class="see-more" routerLink="/suggestions">see more</a>
+</div>
+
+<!-- Loading skeleton -->
+<ng-container *ngIf="isLoading">
+  <div *ngFor="let i of [0,1,2]" class="row skeleton"></div>
+</ng-container>
+
+<!-- Empty state -->
+<div *ngIf="!isLoading && !hasSuggestions" class="empty">
+  No pending suggestions — tap Suggest on the home screen
+</div>
+
+<!-- Suggestion rows -->
+<ng-container *ngIf="!isLoading && hasSuggestions">
+  <div
+    *ngFor="let s of suggestions; trackBy: trackById"
+    class="row"
+  >
+    <!-- Thumbnail -->
+    <img
+      *ngIf="s.posterUrl"
+      [src]="s.posterUrl"
+      [alt]="s.title"
+      class="row__thumb"
+    />
+    <div *ngIf="!s.posterUrl" class="row__thumb row__thumb--placeholder"></div>
+
+    <!-- Body -->
+    <div class="row__body">
+      <div class="row__title">{{ s.title }}</div>
+      <div class="row__meta">{{ metaLine(s) }}</div>
+    </div>
+
+    <!-- Vote counts -->
+    <div class="row__votes">
+      <span class="vote vote--up">+{{ s.upVotes }}</span>
+      <span class="vote vote--down">-{{ s.downVotes }}</span>
+    </div>
+  </div>
+</ng-container>

@@ -1,1 +1,68 @@
-// placeholder styles — replace when implementing
+:host {
+  display: block;
+  background: #0d0d0d;
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
+// ── Top bar ───────────────────────────────────────────────────────────────────
+
+.topbar {
+  display: flex;
+  align-items: center;
+  padding: 44px 16px 12px;
+  position: sticky;
+  top: 0;
+  background: #0d0d0d;
+  z-index: 10;
+
+  &__title {
+    flex: 1;
+    text-align: center;
+    font-family: Georgia, serif;
+    font-size: 0.9375rem;
+    font-weight: 400;
+    color: #d4a03a;
+    margin: 0;
+  }
+
+  &__spacer {
+    width: 36px; // matches back-btn width to keep title centered
+  }
+}
+
+.back-btn {
+  background: none;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+}
+
+// ── Section dividers ──────────────────────────────────────────────────────────
+
+.divider {
+  height: 1px;
+  background: #1e1e1e;
+  margin: 20px 16px;
+}
+
+// ── No member ─────────────────────────────────────────────────────────────────
+
+.no-member {
+  padding: 48px 24px;
+  text-align: center;
+  font-size: 0.875rem;
+  color: #5a5a5a;
+}
+
+// ── Bottom padding ────────────────────────────────────────────────────────────
+
+.bottom-pad {
+  height: 36px;
+}

@@ -1,0 +1,56 @@
+:host { display: block; padding: 0 16px; }
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.section-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  color: #8a6030;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.section-avg {
+  font-size: 0.5625rem;
+  color: #444;
+}
+
+.chart-wrap {
+  background: #111;
+  border: 1px solid #1e1e1e;
+  border-radius: 10px;
+  padding: 12px;
+
+  &.skeleton { height: 110px; border: none; }
+}
+
+.chart-empty {
+  height: 86px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  color: #5a5a5a;
+}
+
+.chart-svg {
+  display: block;
+  width: 100%;
+  height: 86px;
+}
+
+.chart-months {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+
+  span {
+    font-size: 0.4375rem;
+    color: #3a3a3a;
+  }
+}

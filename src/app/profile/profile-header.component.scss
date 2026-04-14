@@ -1,0 +1,85 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 24px 20px 20px;
+}
+
+.avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 3px solid #d4a03a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &__initial {
+    font-size: 2rem;
+    font-family: Georgia, serif;
+    font-weight: 700;
+    color: #d4a03a;
+    line-height: 1;
+  }
+}
+
+.name-skeleton {
+  width: 100px;
+  height: 20px;
+}
+
+.member-name {
+  font-size: 1.25rem;
+  font-family: Georgia, serif;
+  color: #f0e0c0;
+  margin-top: 4px;
+}
+
+.member-role {
+  font-size: 0.625rem;
+  color: #6a5030;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 20px;
+  padding: 7px 14px;
+  min-width: 60px;
+
+  &__value {
+    font-size: 1.0625rem;
+    font-weight: 700;
+    color: #d4a03a;
+    line-height: 1.2;
+  }
+
+  &__label {
+    font-size: 0.5625rem;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 2px;
+  }
+
+  // Skeleton pill state
+  &.skeleton {
+    width: 64px;
+    height: 52px;
+    border: none;
+  }
+}
