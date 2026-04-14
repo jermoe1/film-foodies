@@ -1,4 +1,302 @@
-<div class="page-placeholder">
-  <h1>Movie Night</h1>
-  <p>Coming soon.</p>
+<div class="mn">
+
+  <!-- Topbar -->
+  <div class="mn__topbar">
+    <button class="mn__back" (click)="goBack()" aria-label="Go back">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M12 5L7 10L12 15" stroke="#c04040" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <span class="mn__title">Log a Movie Night</span>
+    <div class="mn__spacer"></div>
+  </div>
+
+  <!-- ── Movie search ────────────────────────────────────────────────────────── -->
+
+  <div class="mn__section-label">Movie</div>
+
+  <div class="mn__search-wrap" *ngIf="!selectedMovie">
+    <svg class="mn__search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <circle cx="6.5" cy="6.5" r="4.5" stroke="#666" stroke-width="1.3"/>
+      <line x1="10" y1="10" x2="14" y2="14" stroke="#666" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <input
+      class="mn__search"
+      type="text"
+      placeholder="Search by movie title…"
+      [value]="query"
+      (input)="onQueryChange($any($event.target).value)"
+      autocomplete="off"
+    />
+    <div class="mn__spinner" *ngIf="isSearching"></div>
+  </div>
+
+  <!-- Search results -->
+  <div class="mn__results" *ngIf="!selectedMovie && results.length">
+    <button
+      *ngFor="let r of results; trackBy: trackByImdbId"
+      class="mn__result"
+      (click)="selectMovie(r)"
+    >
+      <img
+        *ngIf="r.posterUrl"
+        [src]="r.posterUrl"
+        [alt]="r.title"
+        class="mn__result-poster"
+      />
+      <div *ngIf="!r.posterUrl" class="mn__result-poster mn__result-poster--placeholder">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <rect x="2" y="1" width="10" height="12" rx="1" stroke="#444" stroke-width="1" fill="none"/>
+        </svg>
+      </div>
+      <div class="mn__result-info">
+        <span class="mn__result-title">{{ r.title }}</span>
+        <span class="mn__result-year" *ngIf="r.releaseYear">{{ r.releaseYear }}</span>
+        <span
+          *ngIf="r.movieLanguage && !r.movieLanguage.toLowerCase().startsWith('english')"
+          class="mn__result-lang"
+        >{{ r.movieLanguage.split(', ')[0] }}</span>
+      </div>
+      <svg width="8" height="8" viewBox="0 0 8 8" fill="none" class="mn__result-chevron">
+        <path d="M2 1L6 4L2 7" stroke="#555" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <div
+    class="mn__no-results"
+    *ngIf="!isSearching && !selectedMovie && query.trim() && !results.length"
+  >
+    No matches found — try a different title
+  </div>
+
+  <!-- Selected movie card -->
+  <div class="mn__detail" *ngIf="selectedMovie">
+    <div class="mn__detail-card">
+      <img
+        *ngIf="selectedMovie.posterUrl"
+        [src]="selectedMovie.posterUrl"
+        [alt]="selectedMovie.title"
+        class="mn__detail-poster"
+      />
+      <div *ngIf="!selectedMovie.posterUrl" class="mn__detail-poster mn__detail-poster--placeholder"></div>
+      <div class="mn__detail-info">
+        <div class="mn__detail-title">{{ selectedMovie.title }}</div>
+        <div class="mn__detail-meta" *ngIf="selectedMovie.releaseYear">{{ selectedMovie.releaseYear }}</div>
+        <div class="mn__detail-meta" *ngIf="selectedMovie.genre">{{ selectedMovie.genre }}</div>
+        <div class="mn__detail-meta" *ngIf="selectedMovie.director">Dir. {{ selectedMovie.director!.split(', ')[0] }}</div>
+        <div class="mn__detail-row" *ngIf="selectedMovie.imdbRating || selectedMovie.runtime">
+          <span *ngIf="selectedMovie.imdbRating" class="mn__detail-rating">★ {{ selectedMovie.imdbRating }}</span>
+          <span *ngIf="selectedMovie.runtime" class="mn__detail-runtime">{{ selectedMovie.runtime }}</span>
+        </div>
+      </div>
+    </div>
+    <button class="mn__change-btn" (click)="clearMovieSelection()">Change movie</button>
+  </div>
+
+  <!-- ── Host ────────────────────────────────────────────────────────────────── -->
+
+  <div class="mn__section-label mn__section-label--mt">Host</div>
+
+  <div class="mn__field">
+    <div class="mn__skeleton mn__skeleton--select skeleton" *ngIf="loading"></div>
+    <select
+      *ngIf="!loading"
+      class="mn__select"
+      [(ngModel)]="hostId"
+      aria-label="Select host"
+    >
+      <option value="" disabled>Select a host…</option>
+      <option
+        *ngFor="let m of members; trackBy: trackByMemberId"
+        [value]="m.id"
+      >{{ m.first_name }}</option>
+    </select>
+  </div>
+
+  <!-- ── Date ────────────────────────────────────────────────────────────────── -->
+
+  <div class="mn__section-label mn__section-label--mt">Date</div>
+
+  <div class="mn__field">
+    <input
+      class="mn__input"
+      type="date"
+      [(ngModel)]="dateStr"
+      aria-label="Movie night date"
+    />
+  </div>
+
+  <!-- ── Attendees ───────────────────────────────────────────────────────────── -->
+
+  <div class="mn__section-label mn__section-label--mt">
+    Who was there?
+    <span class="mn__section-hint">Uncheck anyone who missed it</span>
+  </div>
+
+  <div class="mn__attendees">
+    <div class="mn__attendees-grid" *ngIf="!loading">
+      <button
+        *ngFor="let m of members; trackBy: trackByMemberId"
+        class="mn__attendee"
+        [class.mn__attendee--checked]="attendeeChecked.has(m.id)"
+        [class.mn__attendee--unchecked]="!attendeeChecked.has(m.id)"
+        (click)="toggleAttendee(m.id)"
+        [attr.aria-pressed]="attendeeChecked.has(m.id)"
+        [attr.aria-label]="m.first_name + (attendeeChecked.has(m.id) ? ' (attending)' : ' (not attending)')"
+      >
+        <span
+          class="mn__attendee-avatar"
+          [style.background-color]="attendeeChecked.has(m.id) ? m.avatar_color : 'transparent'"
+          [style.border-color]="m.avatar_color"
+          [style.color]="attendeeChecked.has(m.id) ? '#0d0d0d' : m.avatar_color"
+        >{{ m.first_name[0] }}</span>
+        <span class="mn__attendee-name">{{ m.first_name }}</span>
+        <span class="mn__attendee-check" *ngIf="attendeeChecked.has(m.id)">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <path d="M2 5L4 7L8 3" stroke="#4a9a5a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </span>
+      </button>
+    </div>
+    <div class="mn__attendees-skeleton" *ngIf="loading">
+      <div class="mn__skeleton mn__skeleton--attendee skeleton" *ngFor="let i of [1,2,3,4,5,6]"></div>
+    </div>
+  </div>
+
+  <!-- ── Food ────────────────────────────────────────────────────────────────── -->
+
+  <div class="mn__section-label mn__section-label--mt">Food & Drinks</div>
+
+  <div class="mn__field">
+    <label class="mn__input-label" for="foodMain">🍽 Main dish</label>
+    <input
+      id="foodMain"
+      class="mn__input"
+      type="text"
+      placeholder="e.g. Thai green curry"
+      [(ngModel)]="foodMain"
+    />
+  </div>
+
+  <div class="mn__field">
+    <label class="mn__input-label" for="foodSides">🍿 Sides & snacks</label>
+    <input
+      id="foodSides"
+      class="mn__input"
+      type="text"
+      placeholder="e.g. Popcorn, spring rolls"
+      [(ngModel)]="foodSides"
+    />
+  </div>
+
+  <div class="mn__field">
+    <label class="mn__input-label" for="foodDrinks">🥂 Drinks</label>
+    <input
+      id="foodDrinks"
+      class="mn__input"
+      type="text"
+      placeholder="e.g. Wine, sparkling water"
+      [(ngModel)]="foodDrinks"
+    />
+  </div>
+
+  <!-- ── Photo URL ────────────────────────────────────────────────────────────── -->
+
+  <div class="mn__field mn__field--mt">
+    <label class="mn__input-label" for="photoUrl">
+      Photo URL
+      <span class="mn__input-label-note">optional</span>
+    </label>
+    <input
+      id="photoUrl"
+      class="mn__input"
+      type="url"
+      placeholder="https://…"
+      [(ngModel)]="photoUrl"
+    />
+  </div>
+
+  <!-- ── Advanced options ────────────────────────────────────────────────────── -->
+
+  <button class="mn__advanced-toggle" (click)="toggleAdvanced()" [attr.aria-expanded]="advancedOpen">
+    <svg
+      class="mn__advanced-caret"
+      [class.mn__advanced-caret--open]="advancedOpen"
+      width="12" height="12" viewBox="0 0 12 12" fill="none"
+    >
+      <path d="M3 5L6 8L9 5" stroke="#666" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Advanced options
+  </button>
+
+  <div class="mn__advanced" *ngIf="advancedOpen">
+
+    <div class="mn__field">
+      <label class="mn__input-label" for="watchPlatform">Watch platform</label>
+      <select id="watchPlatform" class="mn__select" [(ngModel)]="watchPlatform">
+        <option value="">Not recorded</option>
+        <option *ngFor="let p of platforms" [value]="p">{{ p }}</option>
+      </select>
+    </div>
+
+    <div class="mn__field">
+      <label class="mn__input-label" for="cutVersion">Cut / version</label>
+      <select id="cutVersion" class="mn__select" [(ngModel)]="cutVersion">
+        <option *ngFor="let c of cutVersions" [value]="c">{{ c }}</option>
+      </select>
+    </div>
+
+    <div class="mn__field" *ngIf="isNonEnglish">
+      <label class="mn__input-label" for="subtitleOption">Subtitles / dub</label>
+      <select id="subtitleOption" class="mn__select" [(ngModel)]="subtitleOption">
+        <option value="">Not recorded</option>
+        <option *ngFor="let s of subtitleOptions" [value]="s">{{ s }}</option>
+      </select>
+    </div>
+
+    <div class="mn__field">
+      <div class="mn__input-label">Viewing setup</div>
+      <div class="mn__check-row">
+        <label class="mn__check-label">
+          <input
+            type="checkbox"
+            class="mn__checkbox"
+            [(ngModel)]="projector"
+          />
+          <span class="mn__check-custom"></span>
+          Projector
+        </label>
+        <label class="mn__check-label">
+          <input
+            type="checkbox"
+            class="mn__checkbox"
+            [(ngModel)]="largeTv"
+          />
+          <span class="mn__check-custom"></span>
+          Large TV
+        </label>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Submit ──────────────────────────────────────────────────────────────── -->
+
+  <div class="mn__footer">
+    <div class="mn__error" *ngIf="submitError">{{ submitError }}</div>
+    <div class="mn__success" *ngIf="submitSuccess">Movie night logged!</div>
+    <button
+      class="mn__submit"
+      [disabled]="!canSubmit || submitSuccess"
+      (click)="onSubmit()"
+    >
+      <span *ngIf="!isSubmitting && !submitSuccess">Log Movie Night</span>
+      <span *ngIf="isSubmitting">Saving…</span>
+      <span *ngIf="submitSuccess">Saved ✓</span>
+    </button>
+  </div>
+
+  <div class="mn__bottom-pad"></div>
+
 </div>
