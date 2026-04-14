@@ -1,0 +1,70 @@
+<div class="select-member">
+
+  <!-- Logo -->
+  <div class="select-member__logo">
+    <span class="select-member__logo-title">Film Foodies</span>
+    <span class="select-member__logo-tagline">Movie &amp; Dinner Club</span>
+  </div>
+
+  <!-- Not configured warning -->
+  <div *ngIf="!isConfigured" class="select-member__unconfigured">
+    <div class="select-member__warn-icon">
+      <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <path d="M16 3L30 27H2L16 3Z" stroke="#C8860A" stroke-width="1.5" fill="none" stroke-linejoin="round"/>
+        <line x1="16" y1="13" x2="16" y2="20" stroke="#C8860A" stroke-width="2" stroke-linecap="round"/>
+        <circle cx="16" cy="23.5" r="1" fill="#C8860A"/>
+      </svg>
+    </div>
+    <p class="select-member__warn-title">Connection not set up</p>
+    <p class="select-member__warn-sub">Enter your Supabase URL and API key in Settings to get started.</p>
+    <button class="select-member__settings-btn" (click)="goToSettings()">Go to Settings</button>
+  </div>
+
+  <!-- Headline -->
+  <h1 class="select-member__headline" *ngIf="isConfigured">Who's watching?</h1>
+
+  <!-- Loading skeletons -->
+  <div class="select-member__grid" *ngIf="isConfigured && isLoading">
+    <div *ngFor="let i of [0,1,2,3,4,5]" class="select-member__card skeleton"></div>
+  </div>
+
+  <!-- Member grid -->
+  <div class="select-member__grid" *ngIf="isConfigured && !isLoading && members.length">
+    <button
+      *ngFor="let member of members"
+      class="select-member__card"
+      (click)="selectMember(member)"
+      [attr.aria-label]="'Select ' + member.first_name"
+    >
+      <div
+        class="select-member__avatar"
+        [style.background-color]="member.avatar_color"
+        [style.border-color]="member.avatar_color"
+      >{{ initial(member) }}</div>
+      <span class="select-member__name">{{ member.first_name }}</span>
+    </button>
+  </div>
+
+  <!-- No members found -->
+  <div
+    class="select-member__empty"
+    *ngIf="isConfigured && !isLoading && !members.length"
+  >
+    <p>No members found. Add members in Settings.</p>
+    <button class="select-member__settings-btn" (click)="goToSettings()">Go to Settings</button>
+  </div>
+
+  <!-- Settings link (always visible at bottom) -->
+  <button class="select-member__footer-link" (click)="goToSettings()">
+    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+      <circle cx="7" cy="7" r="5.5" stroke="#555" stroke-width="1.2" fill="none"/>
+      <circle cx="7" cy="7" r="2" stroke="#555" stroke-width="1.2" fill="none"/>
+      <line x1="7" y1="1.5" x2="7" y2="3.5" stroke="#555" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="7" y1="10.5" x2="7" y2="12.5" stroke="#555" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="1.5" y1="7" x2="3.5" y2="7" stroke="#555" stroke-width="1.2" stroke-linecap="round"/>
+      <line x1="10.5" y1="7" x2="12.5" y2="7" stroke="#555" stroke-width="1.2" stroke-linecap="round"/>
+    </svg>
+    Settings
+  </button>
+
+</div>

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Observable, from, of, forkJoin } from 'rxjs';
+import { Observable, from, of } from 'rxjs';
 import { map, catchError, switchMap } from 'rxjs/operators';
 import { SupabaseService } from './supabase.service';
 import { MovieSearchResult } from '../../suggestions/suggestions.types';
@@ -134,7 +134,7 @@ export class OmdbService {
             if (!detail || detail.Response === 'False') return of(null);
             const row = {
               title: detail.Title,
-              release_year: parseInt(detail.Year, 10) || null,
+              release_year: detail.Year !== 'N/A' ? detail.Year : null,
               imdb_id: detail.imdbID,
               imdb_url: `https://www.imdb.com/title/${detail.imdbID}/`,
               poster_url: detail.Poster !== 'N/A' ? detail.Poster : null,

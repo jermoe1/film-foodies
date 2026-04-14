@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Observable, from, of } from 'rxjs';
-import { map, catchError } from 'rxjs/operators';
+import { map, switchMap, catchError } from 'rxjs/operators';
 import { SupabaseService } from './supabase.service';
 
 const PASSCODE_KEY = 'ff_passcode_verified';
@@ -18,44 +18,69 @@ export class AuthService {
   }
 
   /**
-   * Verify the entered passcode against the hash stored in app_settings.
+   * Verify the entered passcode against the SHA-256 hash stored in app_settings.
    * Sets the local storage flag on success so re-entry is skipped until passcode changes.
    */
   verifyPasscode(passcode: string): Observable<boolean> {
-    return from(
-      this.supabase.getClient()
-        .from('app_settings')
-        .select('passcode_hash')
-        .single()
-    ).pipe(
-      map(({ data, error }) => {
-        if (error || !data) return false;
-        const hash = this.hashPasscode(passcode);
-        const matches = data['passcode_hash'] === hash;
-        if (matches) {
-          localStorage.setItem(PASSCODE_KEY, 'true');
-        }
-        return matches;
-      }),
-      catchError(() => of(false))
+    return from(this.hashPasscode(passcode)).pipe(
+      switchMap((hash) =>
+        from(
+          this.supabase
+            .getClient()
+            .from('app_settings')
+            .select('passcode_hash')
+            .single()
+        ).pipe(
+          map(({ data, error }) => {
+            if (error || !data) return false;
+            const matches = (data as any)['passcode_hash'] === hash;
+            if (matches) localStorage.setItem(PASSCODE_KEY, 'true');
+            return matches;
+          }),
+          catchError(() => of(false))
+        )
+      )
     );
   }
 
   /**
-   * Invalidate the cached passcode verification (e.g. after passcode change in Settings).
+   * Set a new passcode: hash it with SHA-256 and write to app_settings.
+   * Clears all cached verifications so all members must re-enter the new passcode.
    */
+  setPasscode(newPasscode: string): Observable<boolean> {
+    return from(this.hashPasscode(newPasscode)).pipe(
+      switchMap((hash) =>
+        from(
+          this.supabase
+            .getClient()
+            .from('app_settings')
+            .update({ passcode_hash: hash, updated_at: new Date().toISOString() })
+            .not('id', 'is', null)
+        ).pipe(
+          map(({ error }) => {
+            if (!error) this.clearVerification();
+            return !error;
+          }),
+          catchError(() => of(false))
+        )
+      )
+    );
+  }
+
+  /** Invalidate the cached passcode verification (e.g. after passcode change). */
   clearVerification(): void {
     localStorage.removeItem(PASSCODE_KEY);
   }
 
   /**
    * Hash a passcode using the Web Crypto API (SHA-256).
-   * Stored hash in Supabase must be generated with the same algorithm.
-   * TODO: wire up SHA-256 hash generation in Settings when setting the passcode.
+   * The hash stored in app_settings must be generated with the same algorithm.
    */
-  hashPasscode(passcode: string): string {
-    // Placeholder: btoa is not cryptographically secure.
-    // TODO: replace with Web Crypto API SHA-256 once Settings screen is built.
-    return btoa(passcode);
+  async hashPasscode(passcode: string): Promise<string> {
+    const encoded = new TextEncoder().encode(passcode);
+    const buffer = await crypto.subtle.digest('SHA-256', encoded);
+    return Array.from(new Uint8Array(buffer))
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('');
   }
 }

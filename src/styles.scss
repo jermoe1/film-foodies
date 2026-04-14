@@ -69,6 +69,64 @@ body.theme-lobby {
 }
 
 // =============================================================================
+// Theme: High Contrast
+// =============================================================================
+body.theme-high-contrast {
+  --color-bg: #000000;
+  --color-surface: #111111;
+  --color-surface-raised: #1c1c1c;
+  --color-text: #ffffff;
+  --color-text-muted: rgba(255, 255, 255, 0.75);
+  --color-text-disabled: rgba(255, 255, 255, 0.4);
+  --color-border: rgba(255, 255, 255, 0.25);
+  --color-accent: #FFD700;
+  --color-danger: #FF4444;
+}
+
+// =============================================================================
+// Theme: Anti-Glare (outdoor readable)
+// =============================================================================
+body.theme-anti-glare {
+  --color-bg: #2a2a2a;
+  --color-surface: #363636;
+  --color-surface-raised: #404040;
+  --color-text: #e8e0d0;
+  --color-text-muted: rgba(232, 224, 208, 0.6);
+  --color-text-disabled: rgba(232, 224, 208, 0.35);
+  --color-border: rgba(232, 224, 208, 0.15);
+  --color-accent: #B8730A;
+  --color-danger: #CC3333;
+}
+
+// =============================================================================
+// Theme: Colorblind (deuteranopia-safe — no red/green reliance)
+// =============================================================================
+body.theme-colorblind {
+  --color-accent: #1A4A8B;
+  --color-gold: #1A4A8B;
+  --color-crimson: #804000;
+  --color-danger: #FF8C00;
+  --color-severity-mild: #0088CC;
+  --color-severity-moderate: #FF8C00;
+  --color-severity-severe: #CC4400;
+}
+
+// =============================================================================
+// Theme: Forest Mode
+// =============================================================================
+body.theme-forest {
+  --color-bg: #0a2a0a;
+  --color-surface: #122012;
+  --color-surface-raised: #1a2c1a;
+  --color-text: #e0eed8;
+  --color-text-muted: rgba(224, 238, 216, 0.6);
+  --color-text-disabled: rgba(224, 238, 216, 0.35);
+  --color-border: rgba(224, 238, 216, 0.12);
+  --color-accent: #4A8B2A;
+  --color-danger: #CC3333;
+}
+
+// =============================================================================
 // Skeleton loader (shared across all feature modules)
 // =============================================================================
 

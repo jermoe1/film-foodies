@@ -1,4 +1,250 @@
-<div class="page-placeholder">
-  <h1>Settings</h1>
-  <p>Coming soon.</p>
+<div class="admin">
+
+  <!-- Topbar -->
+  <div class="admin__topbar">
+    <button class="admin__back" (click)="goBack()" aria-label="Go back">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M12 5L7 10L12 15" stroke="#d4a03a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <span class="admin__title">Settings</span>
+    <div class="admin__spacer"></div>
+  </div>
+
+  <!-- ── Section: Connection ─────────────────────────────────────────────── -->
+  <section class="admin__section">
+    <div class="admin__section-header">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <circle cx="7" cy="7" r="5.5" stroke="#d4a03a" stroke-width="1.2" fill="none"/>
+        <path d="M4.5 7 C4.5 5 5.5 3.5 7 3.5 C8.5 3.5 9.5 5 9.5 7 C9.5 9 8.5 10.5 7 10.5 C5.5 10.5 4.5 9 4.5 7Z" stroke="#d4a03a" stroke-width="1" fill="none"/>
+        <line x1="1.5" y1="7" x2="12.5" y2="7" stroke="#d4a03a" stroke-width="1"/>
+      </svg>
+      <span>Connection</span>
+    </div>
+
+    <div class="admin__not-configured-banner" *ngIf="!isConfigured">
+      <span>⚠ Not connected — enter your Supabase credentials below to get started.</span>
+    </div>
+
+    <div class="admin__field">
+      <label class="admin__label">Supabase URL</label>
+      <input class="admin__input" type="url" placeholder="https://xxxx.supabase.co"
+        [(ngModel)]="supabaseUrl" autocomplete="off"/>
+    </div>
+
+    <div class="admin__field">
+      <label class="admin__label">Supabase Anon Key</label>
+      <input class="admin__input admin__input--mono" type="password" placeholder="eyJ…"
+        [(ngModel)]="supabaseKey" autocomplete="off"/>
+    </div>
+
+    <div class="admin__field">
+      <label class="admin__label">OMDB API Key <span class="admin__label-note">(for movie search)</span></label>
+      <input class="admin__input admin__input--mono" type="password" placeholder="abc12345"
+        [(ngModel)]="omdbKey" autocomplete="off"/>
+    </div>
+
+    <div class="admin__error" *ngIf="connectionError">{{ connectionError }}</div>
+    <div class="admin__success" *ngIf="connectionSaved">Connection saved!</div>
+
+    <button class="admin__btn admin__btn--primary" [disabled]="isSavingConnection" (click)="saveConnection()">
+      {{ isSavingConnection ? 'Saving…' : (isConfigured ? 'Update Connection' : 'Save & Connect') }}
+    </button>
+
+    <p class="admin__keys-note">
+      Keys are stored in this browser only — never sent to any server other than Supabase.
+    </p>
+  </section>
+
+  <div class="admin__divider"></div>
+
+  <!-- ── Section: Appearance ────────────────────────────────────────────── -->
+  <section class="admin__section">
+    <div class="admin__section-header">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <circle cx="7" cy="7" r="5.5" stroke="#d4a03a" stroke-width="1.2" fill="none"/>
+        <circle cx="7" cy="5" r="1.2" fill="#d4a03a"/>
+        <circle cx="9.5" cy="8.5" r="1.2" fill="#d4a03a"/>
+        <circle cx="4.5" cy="8.5" r="1.2" fill="#d4a03a"/>
+      </svg>
+      <span>Appearance</span>
+    </div>
+
+    <div class="admin__theme-grid">
+      <button
+        *ngFor="let opt of themeService.options"
+        class="admin__theme-tile"
+        [class.admin__theme-tile--active]="currentTheme === opt.value"
+        (click)="selectTheme(opt.value)"
+        [attr.aria-label]="'Select ' + opt.label + ' theme'"
+      >
+        <div class="admin__theme-preview"
+          [style.background-color]="opt.bg"
+          [style.border-color]="opt.accent">
+          <div class="admin__theme-dot" [style.background-color]="opt.accent"></div>
+        </div>
+        <span class="admin__theme-label">{{ opt.label }}</span>
+        <div class="admin__theme-check" *ngIf="currentTheme === opt.value">
+          <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            <path d="M2 5L4.5 7.5L8 3" stroke="#d4a03a" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+      </button>
+    </div>
+  </section>
+
+  <div class="admin__divider"></div>
+
+  <!-- ── Section: Passcode ──────────────────────────────────────────────── -->
+  <section class="admin__section" *ngIf="isConfigured">
+    <div class="admin__section-header">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <rect x="3" y="6" width="8" height="6" rx="1" stroke="#d4a03a" stroke-width="1.2" fill="none"/>
+        <path d="M5 6V4.5a2 2 0 0 1 4 0V6" stroke="#d4a03a" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+        <circle cx="7" cy="9" r="1" fill="#d4a03a"/>
+      </svg>
+      <span>Site Passcode</span>
+    </div>
+    <p class="admin__section-sub">
+      A 6-digit code shared with the group. Everyone must re-enter it when changed.
+    </p>
+
+    <div class="admin__field">
+      <label class="admin__label">New passcode <span class="admin__label-note">(6 digits)</span></label>
+      <input class="admin__input admin__input--mono" type="password"
+        inputmode="numeric" maxlength="6" placeholder="••••••"
+        [(ngModel)]="newPasscode"/>
+    </div>
+
+    <div class="admin__error" *ngIf="passcodeError">{{ passcodeError }}</div>
+    <div class="admin__success" *ngIf="passcodeSaved">Passcode updated — all members will need to re-enter it.</div>
+
+    <button class="admin__btn admin__btn--primary" [disabled]="isSavingPasscode || newPasscode.length !== 6"
+      (click)="savePasscode()">
+      {{ isSavingPasscode ? 'Saving…' : 'Set Passcode' }}
+    </button>
+  </section>
+
+  <div class="admin__divider" *ngIf="isConfigured"></div>
+
+  <!-- ── Section: Members (admin only) ─────────────────────────────────── -->
+  <section class="admin__section" *ngIf="isConfigured && isAdmin">
+    <div class="admin__section-header">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <circle cx="5" cy="5" r="2.5" stroke="#d4a03a" stroke-width="1.2" fill="none"/>
+        <path d="M1 12 C1 9.5 2.5 8 5 8 C7.5 8 9 9.5 9 12" stroke="#d4a03a" stroke-width="1.2" fill="none" stroke-linecap="round"/>
+        <line x1="11" y1="5" x2="11" y2="9" stroke="#d4a03a" stroke-width="1.5" stroke-linecap="round"/>
+        <line x1="9" y1="7" x2="13" y2="7" stroke="#d4a03a" stroke-width="1.5" stroke-linecap="round"/>
+      </svg>
+      <span>Members</span>
+    </div>
+
+    <!-- Skeleton -->
+    <div *ngIf="isMembersLoading">
+      <div *ngFor="let i of [0,1,2]" class="admin__member-skeleton skeleton"></div>
+    </div>
+
+    <!-- Members list -->
+    <div *ngIf="!isMembersLoading">
+      <div
+        *ngFor="let member of members; trackBy: trackById"
+        class="admin__member-row"
+      >
+        <!-- Avatar -->
+        <div class="admin__member-avatar"
+          [style.background-color]="member.avatar_color"
+          [style.border-color]="member.avatar_color">
+          {{ initial(member) }}
+        </div>
+
+        <!-- Name / edit -->
+        <ng-container *ngIf="editingMemberId !== member.id">
+          <div class="admin__member-info">
+            <span class="admin__member-name">{{ member.first_name }}</span>
+            <span class="admin__member-full">{{ member.full_name }}</span>
+            <span *ngIf="member.is_admin" class="admin__admin-badge">Admin</span>
+          </div>
+          <div class="admin__member-actions">
+            <button class="admin__icon-btn" (click)="moveMember(member, 'up')" [disabled]="isFirst(member)" aria-label="Move up">▲</button>
+            <button class="admin__icon-btn" (click)="moveMember(member, 'down')" [disabled]="isLast(member)" aria-label="Move down">▼</button>
+            <button class="admin__icon-btn admin__icon-btn--edit" (click)="startEdit(member)" aria-label="Edit">✎</button>
+          </div>
+        </ng-container>
+
+        <!-- Inline edit form -->
+        <ng-container *ngIf="editingMemberId === member.id">
+          <div class="admin__member-edit">
+            <input class="admin__input admin__input--sm" placeholder="First name" [(ngModel)]="editFirstName"/>
+            <input class="admin__input admin__input--sm" placeholder="Full name" [(ngModel)]="editFullName"/>
+            <div class="admin__edit-actions">
+              <button class="admin__btn admin__btn--sm admin__btn--primary" [disabled]="isRenameSaving" (click)="saveMemberName()">
+                {{ isRenameSaving ? '…' : 'Save' }}
+              </button>
+              <button class="admin__btn admin__btn--sm" (click)="cancelEdit()">Cancel</button>
+            </div>
+          </div>
+        </ng-container>
+      </div>
+
+      <!-- Add member -->
+      <button class="admin__add-member-btn" (click)="toggleAddForm()" *ngIf="!showAddForm">
+        + Add Member
+      </button>
+
+      <div class="admin__add-form" *ngIf="showAddForm">
+        <div class="admin__field">
+          <label class="admin__label">First name</label>
+          <input class="admin__input" placeholder="e.g. Sarah" [(ngModel)]="addFirstName"/>
+        </div>
+        <div class="admin__field">
+          <label class="admin__label">Full name <span class="admin__label-note">(optional)</span></label>
+          <input class="admin__input" placeholder="e.g. Sarah Connor" [(ngModel)]="addFullName"/>
+        </div>
+        <div class="admin__field">
+          <label class="admin__label">Avatar color</label>
+          <div class="admin__color-row">
+            <button
+              *ngFor="let color of avatarColors"
+              class="admin__color-swatch"
+              [class.admin__color-swatch--active]="addAvatarColor === color"
+              [style.background-color]="color"
+              (click)="addAvatarColor = color"
+              [attr.aria-label]="'Pick color ' + color"
+            ></button>
+          </div>
+        </div>
+        <div class="admin__error" *ngIf="addError">{{ addError }}</div>
+        <div class="admin__edit-actions">
+          <button class="admin__btn admin__btn--primary" [disabled]="isAddSaving" (click)="addMember()">
+            {{ isAddSaving ? 'Adding…' : 'Add Member' }}
+          </button>
+          <button class="admin__btn" (click)="toggleAddForm()">Cancel</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Section: App Info ──────────────────────────────────────────────── -->
+  <div class="admin__divider" *ngIf="isConfigured && appSettings"></div>
+  <section class="admin__section admin__section--info" *ngIf="isConfigured && appSettings">
+    <div class="admin__section-header">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <circle cx="7" cy="7" r="5.5" stroke="#555" stroke-width="1.2" fill="none"/>
+        <line x1="7" y1="6" x2="7" y2="10" stroke="#555" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="7" cy="4" r="0.8" fill="#555"/>
+      </svg>
+      <span>App Info</span>
+    </div>
+    <div class="admin__info-row">
+      <span class="admin__info-label">OMDB calls today</span>
+      <span class="admin__info-value">{{ appSettings.omdbCallsToday }} / 1,000</span>
+    </div>
+    <div class="admin__info-row">
+      <span class="admin__info-label">Refresh in progress</span>
+      <span class="admin__info-value">{{ appSettings.omdbRefreshInProgress ? 'Yes' : 'No' }}</span>
+    </div>
+  </section>
+
+  <div class="admin__bottom-pad"></div>
+
 </div>

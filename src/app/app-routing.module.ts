@@ -48,6 +48,11 @@ const routes: Routes = [
       import('./discovery/discovery.module').then((m) => m.DiscoveryModule),
   },
   {
+    path: 'select-member',
+    loadChildren: () =>
+      import('./select-member/select-member.module').then((m) => m.SelectMemberModule),
+  },
+  {
     path: 'admin',
     loadChildren: () =>
       import('./admin/admin.module').then((m) => m.AdminModule),
