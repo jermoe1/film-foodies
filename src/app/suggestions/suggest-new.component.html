@@ -1,0 +1,128 @@
+<div class="suggest-new">
+
+  <!-- Topbar -->
+  <div class="suggest-new__topbar">
+    <button class="suggest-new__back" (click)="goBack()" aria-label="Go back">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M12 5L7 10L12 15" stroke="#d4a03a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <span class="suggest-new__title">Suggest a Movie</span>
+    <div class="suggest-new__spacer"></div>
+  </div>
+
+  <!-- Search bar -->
+  <div class="suggest-new__search-wrap" *ngIf="!selected">
+    <svg class="suggest-new__search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <circle cx="6.5" cy="6.5" r="4.5" stroke="#666" stroke-width="1.3"/>
+      <line x1="10" y1="10" x2="14" y2="14" stroke="#666" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <input
+      class="suggest-new__search"
+      type="text"
+      placeholder="Search by movie title…"
+      [value]="query"
+      (input)="onQueryChange($any($event.target).value)"
+      autocomplete="off"
+      autofocus
+    />
+    <div class="suggest-new__spinner" *ngIf="isSearching"></div>
+  </div>
+
+  <!-- Search results -->
+  <div class="suggest-new__results" *ngIf="!selected && results.length">
+    <button
+      *ngFor="let r of results; trackBy: trackByImdbId"
+      class="suggest-new__result"
+      (click)="selectMovie(r)"
+    >
+      <img
+        *ngIf="r.posterUrl"
+        [src]="r.posterUrl"
+        [alt]="r.title"
+        class="suggest-new__result-poster"
+      />
+      <div *ngIf="!r.posterUrl" class="suggest-new__result-poster suggest-new__result-poster--placeholder">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <rect x="2" y="1" width="10" height="12" rx="1" stroke="#444" stroke-width="1" fill="none"/>
+        </svg>
+      </div>
+      <div class="suggest-new__result-info">
+        <span class="suggest-new__result-title">{{ r.title }}</span>
+        <span class="suggest-new__result-year" *ngIf="r.releaseYear">{{ r.releaseYear }}</span>
+        <span *ngIf="r.movieLanguage && !r.movieLanguage.toLowerCase().startsWith('english')"
+          class="suggest-new__result-lang">{{ r.movieLanguage.split(', ')[0] }}</span>
+      </div>
+      <svg width="8" height="8" viewBox="0 0 8 8" fill="none" class="suggest-new__result-chevron">
+        <path d="M2 1L6 4L2 7" stroke="#555" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- No results hint -->
+  <div
+    class="suggest-new__no-results"
+    *ngIf="!isSearching && !selected && query.trim() && !results.length"
+  >
+    No matches found — try a different title
+  </div>
+
+  <!-- Selected movie detail -->
+  <div class="suggest-new__detail" *ngIf="selected">
+    <div class="suggest-new__detail-card">
+      <img
+        *ngIf="selected.posterUrl"
+        [src]="selected.posterUrl"
+        [alt]="selected.title"
+        class="suggest-new__detail-poster"
+      />
+      <div *ngIf="!selected.posterUrl" class="suggest-new__detail-poster suggest-new__detail-poster--placeholder"></div>
+      <div class="suggest-new__detail-info">
+        <div class="suggest-new__detail-title">{{ selected.title }}</div>
+        <div class="suggest-new__detail-meta" *ngIf="selected.releaseYear">{{ selected.releaseYear }}</div>
+        <div class="suggest-new__detail-meta" *ngIf="selected.genre">{{ selected.genre }}</div>
+        <div class="suggest-new__detail-meta" *ngIf="selected.director">Dir. {{ selected.director!.split(', ')[0] }}</div>
+        <div class="suggest-new__detail-row" *ngIf="selected.imdbRating || selected.runtime">
+          <span *ngIf="selected.imdbRating" class="suggest-new__detail-rating">★ {{ selected.imdbRating }}</span>
+          <span *ngIf="selected.runtime" class="suggest-new__detail-runtime">{{ selected.runtime }}</span>
+        </div>
+      </div>
+    </div>
+    <button class="suggest-new__change-btn" (click)="clearSelection()">Change movie</button>
+  </div>
+
+  <!-- Manual warnings -->
+  <div class="suggest-new__warnings-section" *ngIf="selected">
+    <label class="suggest-new__warnings-label" for="manualWarnings">
+      Content warnings (optional)
+    </label>
+    <p class="suggest-new__warnings-hint">
+      One per line — e.g. "Flashing lights", "Intense animal scenes"
+    </p>
+    <textarea
+      id="manualWarnings"
+      class="suggest-new__warnings-input"
+      rows="3"
+      placeholder="Any content concerns worth flagging for the group…"
+      [(ngModel)]="manualWarnings"
+    ></textarea>
+  </div>
+
+  <!-- Submit -->
+  <div class="suggest-new__footer" *ngIf="selected">
+    <div class="suggest-new__error" *ngIf="submitError">{{ submitError }}</div>
+    <div class="suggest-new__success" *ngIf="submitSuccess">Added to the queue!</div>
+    <button
+      class="suggest-new__submit"
+      [disabled]="!canSubmit || submitSuccess"
+      (click)="onSubmit()"
+    >
+      <span *ngIf="!isSubmitting && !submitSuccess">Add to Suggestions</span>
+      <span *ngIf="isSubmitting">Adding…</span>
+      <span *ngIf="submitSuccess">Added ✓</span>
+    </button>
+  </div>
+
+  <div class="suggest-new__bottom-pad"></div>
+
+</div>

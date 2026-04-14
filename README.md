@@ -104,3 +104,54 @@ film-foodies/
 - **Soft deletes** on `movie_suggestions` only — all queries must filter `deleted_at IS NULL`
 - **`movie_cast` column** — renamed from `cast` to avoid PostgreSQL reserved word conflict
 - **Postgres trigger** auto-populates `movie_night_attendees` on every INSERT to `movie_nights`
+
+---
+
+## Build Progress
+
+### ✅ Done
+| Module | Route | Notes |
+|---|---|---|
+| HomeModule | `/home` | Three-panel layout, rate bar, hamburger menu |
+| ProfileModule | `/profile` | Header, genre/director/actor rows, contrarian score, trend chart, poster grid, suggestions list |
+| SuggestionsModule | `/suggest` · `/suggest/new` | Queue with sort + voting + undo delete; OMDB search + suggest form; OmdbService |
+
+### 🔲 Up Next — Admin & Member Identity (planned, not yet coded)
+
+The app currently has no member selection or settings screens. These are required before most user-facing features work end-to-end.
+
+**Priority 1 — Member picker (name selection)**
+- Route: `/select-member` (shown on first visit or after "Switch Names")
+- Full-screen overlay listing all members by first name + avatar color circle
+- Selection stored in browser local storage via `MemberService.selectMember()`
+- Auto-shown at app startup if no member is saved in local storage
+- "Switch Names" in hamburger menu clears the current member and shows the picker again
+
+**Priority 2 — Settings / Admin screen** (route: `/admin`)
+- **All members:**
+  - Theme selector (6 themes; stored in local storage)
+  - Handedness toggle (hamburger left/right on Rate bar)
+  - Passcode — change the 6-character site-wide passcode
+  - API Keys — Supabase URL, anon key, OMDB key (local storage only; never committed)
+  - OMDB status: calls today / 1,000
+- **Admin only (Jerry):**
+  - Add new members
+  - Rename members
+  - Reorder members (display_order)
+  - Manual OMDB refresh for a specific movie
+
+**Dependencies unlocked by these two screens:**
+- `memberId` will be available for all votes, ratings, suggestions, and profile queries
+- Supabase and OMDB keys can be entered without hardcoding
+- Theme CSS class can be applied to `<body>` on startup
+
+### 🔲 Remaining Modules (stub — "Coming soon")
+| Module | Route | Key complexity |
+|---|---|---|
+| MovieNightsModule | `/movie-night` | OMDB search, attendee grid, Postgres trigger awareness |
+| RatingsModule | `/rate` | 4-step flow, first-watch flag, poster animation |
+| HistoryModule | `/history` | Tap-to-expand cards, 3-tab detail (Details / Trivia / Notes) |
+| StatsModule | `/stats` | Charts, "Split the Room", personal vs group toggle |
+| DiscoveryModule | `/discover` | Claude API integration, member_ignores, weekly refresh |
+| AdminModule | `/admin` | See "Up Next" above |
+| BulkImportModule | `/bulk-import` | CSV + row-by-row entry, Supabase RPC transaction |
