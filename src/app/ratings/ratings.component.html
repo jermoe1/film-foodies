@@ -1,4 +1,171 @@
-<div class="page-placeholder">
-  <h1>Rate</h1>
-  <p>Coming soon.</p>
+<div class="rate">
+
+  <!-- Topbar -->
+  <div class="rate__topbar">
+    <button class="rate__back" (click)="goHome()" aria-label="Go back">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M12 5L7 10L12 15" stroke="#c04040" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <span class="rate__title">Rate</span>
+    <div class="rate__spacer"></div>
+  </div>
+
+  <!-- ── Loading ──────────────────────────────────────────────────────────── -->
+
+  <div class="rate__loading" *ngIf="loading">
+    <div class="skeleton rate__skeleton--poster"></div>
+    <div class="skeleton rate__skeleton--line"></div>
+    <div class="skeleton rate__skeleton--line rate__skeleton--line-sm"></div>
+  </div>
+
+  <!-- ── No pending rating ────────────────────────────────────────────────── -->
+
+  <div class="rate__empty" *ngIf="!loading && noPending">
+    <div class="rate__empty-icon">
+      <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
+        <polygon points="18,4 22,13 32,13 24,20 27,30 18,24 9,30 12,20 4,13 14,13" fill="#c04040" opacity="0.25"/>
+      </svg>
+    </div>
+    <div class="rate__empty-title">All caught up</div>
+    <div class="rate__empty-sub">You've rated every movie night you attended.</div>
+    <button class="rate__empty-btn" (click)="goHome()">Back to Home</button>
+  </div>
+
+  <!-- ── Success ──────────────────────────────────────────────────────────── -->
+
+  <div class="rate__success-screen" *ngIf="submitSuccess">
+    <div class="rate__success-icon">
+      <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+        <circle cx="24" cy="24" r="22" stroke="#4a9a5a" stroke-width="2" fill="none" opacity="0.3"/>
+        <path d="M14 24L21 31L34 17" stroke="#4a9a5a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+    <div class="rate__success-title">Rating saved!</div>
+    <div class="rate__success-score">{{ score }}<span>/10</span></div>
+  </div>
+
+  <!-- ── Rating flow ──────────────────────────────────────────────────────── -->
+
+  <ng-container *ngIf="!loading && !noPending && !submitSuccess && pending">
+
+    <!-- Movie header (shown on all steps) -->
+    <div class="rate__movie-header">
+      <div class="rate__movie-poster-wrap">
+        <img
+          *ngIf="pending.movie.posterUrl"
+          [src]="pending.movie.posterUrl"
+          [alt]="pending.movie.title"
+          class="rate__movie-poster"
+        />
+        <div *ngIf="!pending.movie.posterUrl" class="rate__movie-poster rate__movie-poster--placeholder"></div>
+      </div>
+      <div class="rate__movie-info">
+        <div class="rate__movie-title">{{ pending.movie.title }}</div>
+        <div class="rate__movie-meta" *ngIf="pending.movie.releaseYear">{{ pending.movie.releaseYear }}</div>
+        <div class="rate__movie-meta" *ngIf="pending.movie.director">Dir. {{ pending.movie.director!.split(', ')[0] }}</div>
+        <div class="rate__movie-date">{{ formattedDate }}</div>
+        <div class="rate__movie-row" *ngIf="pending.movie.imdbRating || pending.movie.runtime">
+          <span *ngIf="pending.movie.imdbRating" class="rate__movie-imdb">★ {{ pending.movie.imdbRating }}</span>
+          <span *ngIf="pending.movie.runtime" class="rate__movie-runtime">{{ pending.movie.runtime }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Step indicators -->
+    <div class="rate__steps">
+      <div class="rate__step" [class.rate__step--active]="step >= 1" [class.rate__step--done]="step > 1"></div>
+      <div class="rate__step" [class.rate__step--active]="step >= 2" [class.rate__step--done]="step > 2"></div>
+      <div class="rate__step" [class.rate__step--active]="step >= 3"></div>
+    </div>
+
+    <!-- ── Step 1: First watch? ──────────────────────────────────────────── -->
+
+    <div class="rate__step-body" *ngIf="step === 1">
+      <div class="rate__question">First time watching?</div>
+      <div class="rate__fw-row">
+        <button
+          class="rate__fw-btn"
+          [class.rate__fw-btn--selected]="firstWatch === true"
+          (click)="setFirstWatch(true)"
+        >
+          <span class="rate__fw-emoji">🎬</span>
+          <span class="rate__fw-label">First Watch</span>
+        </button>
+        <button
+          class="rate__fw-btn"
+          [class.rate__fw-btn--selected]="firstWatch === false"
+          (click)="setFirstWatch(false)"
+        >
+          <span class="rate__fw-emoji">🔁</span>
+          <span class="rate__fw-label">Rewatch</span>
+        </button>
+      </div>
+      <button class="rate__skip-link" (click)="setFirstWatch(null)">Skip this question</button>
+    </div>
+
+    <!-- ── Step 2: Score ─────────────────────────────────────────────────── -->
+
+    <div class="rate__step-body" *ngIf="step === 2">
+      <div class="rate__question">What's your score?</div>
+      <div class="rate__score-wrap">
+        <app-rating-input
+          mode="numeric"
+          [value]="score"
+          (valueChange)="onScoreChange($event)"
+        ></app-rating-input>
+      </div>
+      <div class="rate__score-hint">Enter a number from 0.0 to 10.0</div>
+      <div class="rate__step-actions">
+        <button class="rate__back-step" (click)="goToStep(1)">← Back</button>
+        <button
+          class="rate__next-btn"
+          [disabled]="!canProceedStep2"
+          (click)="goToStep(3)"
+        >Next →</button>
+      </div>
+    </div>
+
+    <!-- ── Step 3: Note & Tags ───────────────────────────────────────────── -->
+
+    <div class="rate__step-body" *ngIf="step === 3">
+      <div class="rate__question">Add a note? <span class="rate__optional">optional</span></div>
+
+      <textarea
+        class="rate__note"
+        rows="3"
+        placeholder="How did the group feel about it? Any memorable moments…"
+        [(ngModel)]="reviewNote"
+      ></textarea>
+
+      <div class="rate__tags-label">Quick tags</div>
+      <div class="rate__tags">
+        <button
+          *ngFor="let tag of presetTags"
+          class="rate__tag"
+          [class.rate__tag--selected]="selectedTags.has(tag)"
+          (click)="toggleTag(tag)"
+          [attr.aria-pressed]="selectedTags.has(tag)"
+        >{{ tag }}</button>
+      </div>
+
+      <div class="rate__error" *ngIf="submitError">{{ submitError }}</div>
+
+      <div class="rate__step-actions">
+        <button class="rate__back-step" (click)="goToStep(2)">← Back</button>
+        <button
+          class="rate__submit-btn"
+          [disabled]="isSubmitting || !canProceedStep2"
+          (click)="onSubmit()"
+        >
+          <span *ngIf="!isSubmitting">Submit Rating</span>
+          <span *ngIf="isSubmitting">Saving…</span>
+        </button>
+      </div>
+    </div>
+
+  </ng-container>
+
+  <div class="rate__bottom-pad"></div>
+
 </div>

@@ -79,11 +79,21 @@
 
   </div>
 
-  <!-- Rate bar — static for now; will become conditional when rating flow is built -->
-  <div class="home__rate-bar" (click)="navigate('rate')">
+  <!-- Rate bar — shown only when current member has an unrated movie night -->
+  <div
+    class="home__rate-bar"
+    *ngIf="rateBarLoaded && pendingRating"
+    (click)="navigate('rate')"
+  >
     <div class="home__rate-poster">
       <div class="home__poster-crop">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+        <img
+          *ngIf="pendingRating.movie.posterUrl"
+          [src]="pendingRating.movie.posterUrl"
+          [alt]="pendingRating.movie.title"
+          class="home__poster-img"
+        />
+        <svg *ngIf="!pendingRating.movie.posterUrl" width="24" height="24" viewBox="0 0 24 24" fill="none">
           <polygon points="12,3 14.5,9 21,9 15.5,13.5 17.5,20 12,16 6.5,20 8.5,13.5 3,9 9.5,9" fill="#c04040" opacity="0.7"/>
         </svg>
       </div>
@@ -94,9 +104,25 @@
       </svg>
       <div>
         <div class="home__rate-lbl">Rate</div>
-        <div class="home__rate-movie">Rate the last movie night</div>
+        <div class="home__rate-movie">{{ pendingRating.movie.title }}</div>
       </div>
     </div>
+    <button
+      class="home__nav-fab"
+      (click)="toggleMenu($event)"
+      aria-label="Open navigation menu"
+    >
+      <span class="home__nav-bar"></span>
+      <span class="home__nav-bar"></span>
+      <span class="home__nav-bar"></span>
+    </button>
+  </div>
+
+  <!-- Hamburger shown standalone when no pending rating -->
+  <div
+    class="home__rate-bar home__rate-bar--nav-only"
+    *ngIf="rateBarLoaded && !pendingRating"
+  >
     <button
       class="home__nav-fab"
       (click)="toggleMenu($event)"
