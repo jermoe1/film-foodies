@@ -10,9 +10,6 @@ import { MemberService, Member } from '../core/services/member.service';
 import { AuthService } from '../core/services/auth.service';
 import { ThemeService, Theme } from '../core/services/theme.service';
 import { AdminService, AppSettings, AVATAR_COLORS } from '../core/services/admin.service';
-import { DTDD_KEY_STORAGE } from '../core/services/content-warning.service';
-
-const OMDB_KEY = 'ff_omdb_key';
 
 @Component({
   selector: 'app-admin',
@@ -21,15 +18,6 @@ const OMDB_KEY = 'ff_omdb_key';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdminComponent implements OnInit {
-  // ── Connection ──────────────────────────────────────────────────────────
-  supabaseUrl = '';
-  supabaseKey = '';
-  omdbKey = '';
-  dtddKey = '';
-  isSavingConnection = false;
-  connectionSaved = false;
-  connectionError = '';
-
   // ── Theme ────────────────────────────────────────────────────────────────
   currentTheme: Theme = 'cinema';
 
@@ -72,17 +60,6 @@ export class AdminComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Pre-fill connection fields if already configured
-    const stored = localStorage.getItem('ff_supabase_config');
-    if (stored) {
-      try {
-        const { url, anonKey } = JSON.parse(stored);
-        this.supabaseUrl = url ?? '';
-        this.supabaseKey = anonKey ?? '';
-      } catch { /* ignore */ }
-    }
-    this.omdbKey = localStorage.getItem(OMDB_KEY) ?? '';
-    this.dtddKey = localStorage.getItem(DTDD_KEY_STORAGE) ?? '';
     this.currentTheme = this.themeService.current;
 
     if (this.supabaseService.isConfigured) {
@@ -101,65 +78,6 @@ export class AdminComponent implements OnInit {
 
   goBack(): void {
     this.router.navigate(['/home']);
-  }
-
-  // ── Connection ────────────────────────────────────────────────────────────
-
-  saveConnection(): void {
-    if (!this.supabaseUrl.trim() || !this.supabaseKey.trim()) {
-      this.connectionError = 'Supabase URL and key are required.';
-      this.cdr.markForCheck();
-      return;
-    }
-    this.isSavingConnection = true;
-    this.connectionError = '';
-    this.connectionSaved = false;
-
-    try {
-      this.supabaseService.initialize(this.supabaseUrl.trim(), this.supabaseKey.trim());
-    } catch {
-      this.connectionError = 'Invalid Supabase credentials.';
-      this.isSavingConnection = false;
-      this.cdr.markForCheck();
-      return;
-    }
-
-    if (this.omdbKey.trim()) {
-      localStorage.setItem(OMDB_KEY, this.omdbKey.trim());
-    }
-    if (this.dtddKey.trim()) {
-      localStorage.setItem(DTDD_KEY_STORAGE, this.dtddKey.trim());
-    } else {
-      localStorage.removeItem(DTDD_KEY_STORAGE);
-    }
-
-    // Verify the connection by attempting to restore the member
-    this.memberService.tryRestoreMemberFromStorage().subscribe(() => {
-      this.isSavingConnection = false;
-      this.connectionSaved = true;
-      this.loadMembers();
-      this.adminService.getAppSettings().subscribe((s) => {
-        this.appSettings = s;
-        this.cdr.markForCheck();
-      });
-      this.cdr.markForCheck();
-    });
-  }
-
-  saveOmdbKey(): void {
-    if (this.omdbKey.trim()) {
-      localStorage.setItem(OMDB_KEY, this.omdbKey.trim());
-    } else {
-      localStorage.removeItem(OMDB_KEY);
-    }
-  }
-
-  saveDtddKey(): void {
-    if (this.dtddKey.trim()) {
-      localStorage.setItem(DTDD_KEY_STORAGE, this.dtddKey.trim());
-    } else {
-      localStorage.removeItem(DTDD_KEY_STORAGE);
-    }
   }
 
   // ── Theme ─────────────────────────────────────────────────────────────────

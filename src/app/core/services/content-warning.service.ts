@@ -2,8 +2,8 @@ import { Injectable } from '@angular/core';
 import { Observable, from, of } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
 import { ContentWarning } from '../../suggestions/suggestions.types';
+import { environment } from '../../../environments/environment';
 
-export const DTDD_KEY_STORAGE = 'ff_dtdd_key';
 const DTDD_BASE = 'https://www.doesthedogdie.com/media/';
 
 interface DtddTopicStat {
@@ -20,7 +20,9 @@ interface DtddTopicStat {
 export class ContentWarningService {
 
   get apiKey(): string | null {
-    return localStorage.getItem(DTDD_KEY_STORAGE);
+    // Environment key (baked in at build time via GitHub secret) takes priority
+    if (environment.dtddApiKey) return environment.dtddApiKey;
+    return null;
   }
 
   get hasApiKey(): boolean {

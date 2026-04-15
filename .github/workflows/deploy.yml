@@ -31,6 +31,7 @@ jobs:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
           OMDB_API_KEY: ${{ secrets.OMDB_API_KEY }}
+          DTDD_API_KEY: ${{ secrets.DTDD_API_KEY }}
         run: |
           cat > src/environments/environment.prod.ts << EOF
           export const environment = {
@@ -38,6 +39,7 @@ jobs:
             supabaseUrl: '${SUPABASE_URL}',
             supabaseAnonKey: '${SUPABASE_ANON_KEY}',
             omdbApiKey: '${OMDB_API_KEY}',
+            dtddApiKey: '${DTDD_API_KEY}',
           };
           EOF
 

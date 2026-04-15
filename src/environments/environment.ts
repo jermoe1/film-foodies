@@ -3,4 +3,5 @@ export const environment = {
   supabaseUrl: '',
   supabaseAnonKey: '',
   omdbApiKey: '',
+  dtddApiKey: '',
 };

@@ -82,19 +82,6 @@
   margin: 8px 16px;
 }
 
-// ── Not configured banner ─────────────────────────────────────────────────────
-
-.admin__not-configured-banner {
-  font-size: 0.75rem;
-  color: var(--ff-gold);
-  background: rgba(212, 160, 58, 0.08);
-  border: 1px solid rgba(212, 160, 58, 0.2);
-  border-radius: 8px;
-  padding: 10px 12px;
-  margin-bottom: 14px;
-  line-height: 1.5;
-}
-
 // ── Form fields ───────────────────────────────────────────────────────────────
 
 .admin__field {
@@ -144,13 +131,6 @@
   color: var(--ff-green);
   font-weight: 600;
   margin-bottom: 8px;
-}
-
-.admin__keys-note {
-  font-size: 0.5625rem;
-  color: #3a3a3a;
-  margin: 8px 0 0;
-  line-height: 1.5;
 }
 
 // ── Buttons ───────────────────────────────────────────────────────────────────
