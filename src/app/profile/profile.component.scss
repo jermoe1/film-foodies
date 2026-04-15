@@ -1,6 +1,6 @@
 :host {
   display: block;
-  background: #0d0d0d;
+  background: var(--ff-bg);
   min-height: 100vh;
   overflow-y: auto;
 }
@@ -13,7 +13,7 @@
   padding: 44px 16px 12px;
   position: sticky;
   top: 0;
-  background: #0d0d0d;
+  background: var(--ff-bg);
   z-index: 10;
 
   &__title {
@@ -22,7 +22,7 @@
     font-family: Georgia, serif;
     font-size: 0.9375rem;
     font-weight: 400;
-    color: #d4a03a;
+    color: var(--ff-gold);
     margin: 0;
   }
 
@@ -48,7 +48,7 @@
 
 .divider {
   height: 1px;
-  background: #1e1e1e;
+  background: var(--ff-bg-hover);
   margin: 20px 16px;
 }
 

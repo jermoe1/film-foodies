@@ -3,8 +3,8 @@
   flex-direction: column;
   min-height: 100dvh;
   padding-bottom: env(safe-area-inset-bottom, 0px);
-  background: #0d0d0d;
-  color: #e8e8e8;
+  background: var(--ff-bg);
+  color: var(--ff-text);
   font-family: inherit;
   overflow-y: auto;
 }
@@ -44,14 +44,14 @@
   align-items: center;
   justify-content: center;
   border-radius: 8px;
-  &:focus-visible { outline: 2px solid #d4a03a; outline-offset: 2px; }
+  &:focus-visible { outline: 2px solid var(--ff-gold); outline-offset: 2px; }
 }
 
 .bulk__title {
   font-size: 1rem;
   font-weight: 600;
   letter-spacing: 0.01em;
-  color: #e8e8e8;
+  color: var(--ff-text);
 }
 
 .bulk__spacer { flex: 1; }
@@ -60,7 +60,7 @@
 
 .bulk__intro {
   font-size: 0.85rem;
-  color: #888;
+  color: var(--ff-text-4);
   line-height: 1.5;
   margin: 0 0 16px;
 }
@@ -72,8 +72,8 @@
   align-items: center;
   gap: 6px;
   background: none;
-  border: 1px solid #333;
-  color: #d4a03a;
+  border: 1px solid var(--ff-border-mid);
+  color: var(--ff-gold);
   font-size: 0.82rem;
   padding: 7px 12px;
   border-radius: 8px;
@@ -81,7 +81,7 @@
   margin-bottom: 20px;
   transition: background 0.15s;
   &:hover { background: rgba(212, 160, 58, 0.06); }
-  &:focus-visible { outline: 2px solid #d4a03a; outline-offset: 2px; }
+  &:focus-visible { outline: 2px solid var(--ff-gold); outline-offset: 2px; }
 }
 
 // ── Drop zone ─────────────────────────────────────────────────────────────────
@@ -98,7 +98,7 @@
   transition: border-color 0.15s, background 0.15s;
 
   &--over {
-    border-color: #d4a03a;
+    border-color: var(--ff-gold);
     background: rgba(212, 160, 58, 0.04);
   }
 }
@@ -107,21 +107,21 @@
 
 .bulk__dropzone-label {
   font-size: 0.88rem;
-  color: #aaa;
+  color: var(--ff-text-3);
   margin: 0;
 }
 
 .bulk__dropzone-or {
   font-size: 0.78rem;
-  color: #555;
+  color: var(--ff-text-6);
   margin: 0;
 }
 
 .bulk__file-label {
   display: inline-block;
-  background: #1e1e1e;
-  border: 1px solid #444;
-  color: #ccc;
+  background: var(--ff-bg-hover);
+  border: 1px solid var(--ff-border-mid);
+  color: var(--ff-text-2);
   font-size: 0.82rem;
   padding: 7px 14px;
   border-radius: 8px;
@@ -137,12 +137,12 @@
 .bulk__paste-btn {
   background: none;
   border: none;
-  color: #666;
+  color: var(--ff-text-5);
   font-size: 0.78rem;
   text-decoration: underline;
   cursor: pointer;
   padding: 0;
-  &:hover { color: #aaa; }
+  &:hover { color: var(--ff-text-3); }
 }
 
 // ── Paste area ────────────────────────────────────────────────────────────────
@@ -155,8 +155,8 @@
 
 .bulk__paste-area {
   width: 100%;
-  background: #141414;
-  border: 1px solid #333;
+  background: var(--ff-bg-card);
+  border: 1px solid var(--ff-border-mid);
   border-radius: 8px;
   color: #ddd;
   font-size: 0.78rem;
@@ -166,8 +166,8 @@
   line-height: 1.5;
   box-sizing: border-box;
 
-  &::placeholder { color: #555; }
-  &:focus { outline: 2px solid #d4a03a; outline-offset: -1px; }
+  &::placeholder { color: var(--ff-text-6); }
+  &:focus { outline: 2px solid var(--ff-gold); outline-offset: -1px; }
 }
 
 .bulk__paste-actions {
@@ -178,13 +178,13 @@
 
 .bulk__paste-cancel {
   background: none;
-  border: 1px solid #333;
-  color: #888;
+  border: 1px solid var(--ff-border-mid);
+  color: var(--ff-text-4);
   font-size: 0.85rem;
   padding: 8px 16px;
   border-radius: 8px;
   cursor: pointer;
-  &:hover { background: #1a1a1a; }
+  &:hover { background: var(--ff-bg-surface); }
 }
 
 .bulk__parse-btn {
@@ -198,7 +198,7 @@
   cursor: pointer;
   transition: background 0.15s;
   &:hover { background: #5080e0; }
-  &:focus-visible { outline: 2px solid #d4a03a; outline-offset: 2px; }
+  &:focus-visible { outline: 2px solid var(--ff-gold); outline-offset: 2px; }
 }
 
 .bulk__upload-error {
@@ -213,13 +213,13 @@
   font-size: 0.85rem;
   margin-bottom: 14px;
   padding: 10px 12px;
-  background: #141414;
+  background: var(--ff-bg-card);
   border-radius: 8px;
-  border: 1px solid #2a2a2a;
+  border: 1px solid var(--ff-border);
 }
 
 .bulk__summary-valid {
-  color: #4a9a5a;
+  color: var(--ff-green);
   font-weight: 600;
 }
 
@@ -229,7 +229,7 @@
 }
 
 .bulk__summary-sep {
-  color: #555;
+  color: var(--ff-text-6);
   margin: 0 2px;
 }
 
@@ -238,7 +238,7 @@
 .bulk__preview-table-wrap,
 .bulk__ready-table-wrap {
   overflow-x: auto;
-  border: 1px solid #2a2a2a;
+  border: 1px solid var(--ff-border);
   border-radius: 10px;
   margin-bottom: 16px;
 }
@@ -250,8 +250,8 @@
 }
 
 .bulk__th {
-  background: #1a1a1a;
-  color: #888;
+  background: var(--ff-bg-surface);
+  color: var(--ff-text-4);
   font-weight: 500;
   text-align: left;
   padding: 8px 10px;
@@ -263,17 +263,17 @@
 }
 
 .bulk__tr {
-  border-bottom: 1px solid #1e1e1e;
+  border-bottom: 1px solid var(--ff-border-sub);
   &:last-child { border-bottom: none; }
   &--error { background: rgba(192, 64, 64, 0.04); }
 }
 
 .bulk__td {
   padding: 7px 10px;
-  color: #ccc;
+  color: var(--ff-text-2);
   vertical-align: middle;
 
-  &--num { color: #555; width: 32px; }
+  &--num { color: var(--ff-text-6); width: 32px; }
   &--title { max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   &--poster { width: 36px; text-align: center; }
 }
@@ -289,7 +289,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 
-  &--ok { background: rgba(74, 154, 90, 0.18); color: #4a9a5a; }
+  &--ok { background: rgba(74, 154, 90, 0.18); color: var(--ff-green); }
   &--err { background: rgba(192, 64, 64, 0.15); color: #c04040; }
 }
 
@@ -301,10 +301,10 @@
   margin: 0 auto;
 }
 
-.bulk__no-poster { color: #555; }
+.bulk__no-poster { color: var(--ff-text-6); }
 
 .bulk__row-year {
-  color: #666;
+  color: var(--ff-text-5);
   font-size: 0.75rem;
   margin-left: 4px;
 }
@@ -323,13 +323,13 @@
 
 .bulk__back-btn {
   background: none;
-  border: 1px solid #333;
-  color: #888;
+  border: 1px solid var(--ff-border-mid);
+  color: var(--ff-text-4);
   font-size: 0.85rem;
   padding: 9px 18px;
   border-radius: 8px;
   cursor: pointer;
-  &:hover { background: #1a1a1a; }
+  &:hover { background: var(--ff-bg-surface); }
 }
 
 .bulk__enrich-btn,
@@ -345,12 +345,12 @@
   transition: background 0.15s;
   &:hover:not(:disabled) { background: #5080e0; }
   &:disabled { opacity: 0.45; cursor: default; }
-  &:focus-visible { outline: 2px solid #d4a03a; outline-offset: 2px; }
+  &:focus-visible { outline: 2px solid var(--ff-gold); outline-offset: 2px; }
 }
 
 .bulk__error-hint {
   font-size: 0.78rem;
-  color: #888;
+  color: var(--ff-text-4);
   margin-top: 10px;
   line-height: 1.5;
 }
@@ -369,7 +369,7 @@
 .bulk__enriching-label {
   font-size: 0.95rem;
   font-weight: 600;
-  color: #e8e8e8;
+  color: var(--ff-text);
   margin: 0;
 }
 
@@ -377,7 +377,7 @@
   width: 100%;
   max-width: 320px;
   height: 6px;
-  background: #222;
+  background: var(--ff-bg-hover);
   border-radius: 3px;
   overflow: hidden;
 }
@@ -391,7 +391,7 @@
 
 .bulk__enriching-sub {
   font-size: 0.8rem;
-  color: #666;
+  color: var(--ff-text-5);
   margin: 0;
 }
 
@@ -400,7 +400,7 @@
 .bulk__confirm-label {
   font-size: 0.9rem;
   font-weight: 600;
-  color: #e8e8e8;
+  color: var(--ff-text);
   margin: 0 0 14px;
 }
 
@@ -420,7 +420,7 @@
 .bulk__error-label {
   font-size: 1rem;
   font-weight: 600;
-  color: #e8e8e8;
+  color: var(--ff-text);
   margin: 0;
 }
 
@@ -435,13 +435,13 @@
 
 .bulk__home-btn {
   background: none;
-  border: 1px solid #333;
-  color: #ccc;
+  border: 1px solid var(--ff-border-mid);
+  color: var(--ff-text-2);
   font-size: 0.88rem;
   padding: 9px 20px;
   border-radius: 8px;
   cursor: pointer;
-  &:hover { background: #1a1a1a; }
+  &:hover { background: var(--ff-bg-surface); }
 }
 
 .bulk__again-btn {
@@ -455,16 +455,16 @@
   cursor: pointer;
   transition: background 0.15s;
   &:hover { background: #5080e0; }
-  &:focus-visible { outline: 2px solid #d4a03a; outline-offset: 2px; }
+  &:focus-visible { outline: 2px solid var(--ff-gold); outline-offset: 2px; }
 }
 
 .bulk__error-report {
   background: none;
-  border: 1px solid #333;
-  color: #888;
+  border: 1px solid var(--ff-border-mid);
+  color: var(--ff-text-4);
   font-size: 0.78rem;
   padding: 7px 14px;
   border-radius: 8px;
   cursor: pointer;
-  &:hover { background: #1a1a1a; color: #ccc; }
+  &:hover { background: var(--ff-bg-surface); color: var(--ff-text-2); }
 }
