@@ -1,16 +1,13 @@
 import { Injectable } from '@angular/core';
-import { Observable, from, of, forkJoin } from 'rxjs';
+import { Observable, from, of } from 'rxjs';
 import { map, catchError, switchMap } from 'rxjs/operators';
 import { SupabaseService } from './supabase.service';
 import { Member } from './member.service';
 
 export interface AppSettings {
   id: string;
-  passcodeHash: string | null;
   omdbCallsToday: number;
-  omdbCallsResetDate: string;
   omdbRefreshInProgress: boolean;
-  updatedAt: string;
 }
 
 export const AVATAR_COLORS = [
@@ -38,18 +35,15 @@ export class AdminService {
     const client = this.client;
     if (!client) return of(null);
     return from(
-      client.from('app_settings').select('*').single()
+      client.from('app_settings').select('id, omdb_calls_today, omdb_refresh_in_progress').single()
     ).pipe(
       map(({ data, error }) => {
         if (error || !data) return null;
         const r = data as any;
         return {
           id: r.id,
-          passcodeHash: r.passcode_hash ?? null,
           omdbCallsToday: r.omdb_calls_today ?? 0,
-          omdbCallsResetDate: r.omdb_calls_reset_date ?? '',
           omdbRefreshInProgress: r.omdb_refresh_in_progress ?? false,
-          updatedAt: r.updated_at ?? '',
         } as AppSettings;
       }),
       catchError(() => of(null))

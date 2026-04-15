@@ -151,8 +151,7 @@ export class BulkImportService {
     onProgress: (p: EnrichProgress) => void,
   ): Observable<ReadyRow[]> {
     const validRows = rows.filter((r) => r.errors.length === 0);
-    const needsLookup = validRows.filter((r) => !r.imdbId || true); // always enrich
-    const total = needsLookup.length;
+    const total = validRows.length; // all valid rows are enriched from OMDB
     let current = 0;
 
     return from(validRows).pipe(
