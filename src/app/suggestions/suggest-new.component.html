@@ -1,14 +1,14 @@
 <div class="suggest-new">
 
   <!-- Topbar -->
-  <div class="suggest-new__topbar">
-    <button class="suggest-new__back" (click)="goBack()" aria-label="Go back">
+  <div class="ff-topbar">
+    <button class="ff-icon-btn suggest-new__back" (click)="goBack()" aria-label="Go back">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
         <path d="M12 5L7 10L12 15" stroke="#d4a03a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </button>
-    <span class="suggest-new__title">Suggest a Movie</span>
-    <div class="suggest-new__spacer"></div>
+    <span class="ff-page-title suggest-new__title">Suggest a Movie</span>
+    <div class="ff-spacer"></div>
   </div>
 
   <!-- Search bar -->
@@ -27,7 +27,7 @@
       autocomplete="off"
       autofocus
     />
-    <div class="suggest-new__spinner" *ngIf="isSearching"></div>
+    <div class="ff-spinner suggest-new__spinner" *ngIf="isSearching"></div>
   </div>
 
   <!-- Search results -->
@@ -52,7 +52,7 @@
         <span class="suggest-new__result-title">{{ r.title }}</span>
         <span class="suggest-new__result-year" *ngIf="r.releaseYear">{{ r.releaseYear }}</span>
         <span *ngIf="r.movieLanguage && !r.movieLanguage.toLowerCase().startsWith('english')"
-          class="suggest-new__result-lang">{{ r.movieLanguage.split(', ')[0] }}</span>
+          class="ff-lang-badge">{{ r.movieLanguage.split(', ')[0] }}</span>
       </div>
       <svg width="8" height="8" viewBox="0 0 8 8" fill="none" class="suggest-new__result-chevron">
         <path d="M2 1L6 4L2 7" stroke="#555" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -144,6 +144,6 @@
     </button>
   </div>
 
-  <div class="suggest-new__bottom-pad"></div>
+  <div class="ff-bottom-pad"></div>
 
 </div>

@@ -94,16 +94,8 @@
 
 .select-member__avatar {
   width: 60px; height: 60px;
-  border-radius: 50%;
   border: 2.5px solid;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: Georgia, serif;
   font-size: 1.5rem;
-  font-weight: 700;
-  color: #0d0d0d;
-  flex-shrink: 0;
 }
 
 .select-member__name {
@@ -124,13 +116,7 @@
 .select-member__spinner {
   width: 24px;
   height: 24px;
-  border: 2px solid var(--ff-border);
-  border-top-color: var(--ff-gold);
-  border-radius: 50%;
-  animation: spin 0.7s linear infinite;
 }
-
-@keyframes spin { to { transform: rotate(360deg); } }
 
 // ── Passcode entry ────────────────────────────────────────────────────────────
 

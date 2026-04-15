@@ -198,3 +198,95 @@ body.theme-forest {
   white-space: nowrap;
   border: 0;
 }
+
+// =============================================================================
+// Shared page-shell utilities — reduces duplication across full-screen pages
+// =============================================================================
+
+// Sticky topbar (layout, position, bg, z-index).
+// Each component's BEM class handles only component-specific overrides (e.g. gap).
+.ff-topbar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  padding: 44px 16px 12px;
+  background: var(--ff-bg);
+  z-index: 10;
+}
+
+// Circular 36×36 icon / back button
+.ff-icon-btn {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  background: transparent;
+  border: none;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+// Centered Georgia serif page title (flex: 1 fills between topbar buttons)
+.ff-page-title {
+  flex: 1;
+  text-align: center;
+  font-family: Georgia, serif;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+// 36px spacer to mirror icon-btn and keep title centred
+.ff-spacer { width: 36px; flex-shrink: 0; }
+
+// Scroll-area bottom padding
+.ff-bottom-pad { height: 36px; }
+
+// 1px horizontal rule (components set their own margin)
+.ff-divider {
+  height: 1px;
+  background: var(--ff-bg-hover);
+}
+
+// Foreign-language badge chip
+.ff-lang-badge {
+  font-size: 0.5625rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  padding: 1px 5px;
+  background: rgba(60, 80, 180, 0.15);
+  border: 1px solid rgba(60, 80, 180, 0.25);
+  border-radius: 8px;
+  color: #6080d0;
+}
+
+// Avatar circle base — size, border, and font-size are set per-instance via BEM
+.ff-avatar {
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: Georgia, serif;
+  font-weight: 700;
+  color: #0d0d0d;
+  flex-shrink: 0;
+}
+
+// Empty-state column (padding may be overridden per-component)
+.ff-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 10px;
+  padding: 60px 32px 24px;
+}
+
+// Spinning loader — size and position set per-instance via BEM class
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.ff-spinner {
+  border-radius: 50%;
+  border: 2px solid var(--ff-border-mid);
+  border-top-color: var(--ff-gold);
+  animation: spin 0.7s linear infinite;
+}

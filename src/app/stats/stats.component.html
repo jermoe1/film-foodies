@@ -1,14 +1,14 @@
 <div class="stats">
 
   <!-- Topbar -->
-  <div class="stats__topbar">
-    <button class="stats__back" (click)="goBack()" aria-label="Go back">
+  <div class="ff-topbar">
+    <button class="ff-icon-btn stats__back" (click)="goBack()" aria-label="Go back">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
         <path d="M12 5L7 10L12 15" stroke="#4070d0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </button>
-    <span class="stats__title">Stats</span>
-    <div class="stats__spacer"></div>
+    <span class="ff-page-title stats__title">Stats</span>
+    <div class="ff-spacer"></div>
   </div>
 
   <!-- Loading -->
@@ -22,7 +22,7 @@
   </div>
 
   <!-- Empty -->
-  <div class="stats__empty" *ngIf="!loading && (!result || result.totalNights === 0)">
+  <div class="ff-empty" *ngIf="!loading && (!result || result.totalNights === 0)">
     <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
       <rect x="5" y="26" width="6" height="9" rx="1.5" fill="#4070d0" opacity="0.3"/>
       <rect x="14" y="18" width="6" height="17" rx="1.5" fill="#4070d0" opacity="0.5"/>
@@ -65,7 +65,7 @@
           class="stats__member-row"
         >
           <span
-            class="stats__member-avatar"
+            class="ff-avatar stats__member-avatar"
             [style.background-color]="m.avatarColor"
           >{{ m.firstName[0] }}</span>
           <span class="stats__member-name">{{ m.firstName }}</span>
@@ -142,7 +142,7 @@
               [class.stats__split-member--absent]="ms.score === null"
             >
               <span
-                class="stats__split-avatar"
+                class="ff-avatar stats__split-avatar"
                 [style.background-color]="ms.score !== null ? ms.avatarColor : 'transparent'"
                 [style.border-color]="ms.avatarColor"
                 [style.color]="ms.score !== null ? '#0d0d0d' : ms.avatarColor"
@@ -183,7 +183,7 @@
               [class.stats__split-member--absent]="ms.score === null"
             >
               <span
-                class="stats__split-avatar"
+                class="ff-avatar stats__split-avatar"
                 [style.background-color]="ms.score !== null ? ms.avatarColor : 'transparent'"
                 [style.border-color]="ms.avatarColor"
                 [style.color]="ms.score !== null ? '#0d0d0d' : ms.avatarColor"
@@ -204,7 +204,7 @@
       <div class="stats__section-sub">Scores furthest from the group's consensus</div>
       <div class="stats__contrarian-card">
         <span
-          class="stats__contrarian-avatar"
+          class="ff-avatar stats__contrarian-avatar"
           [style.background-color]="result.contrarian.avatarColor"
         >{{ result.contrarian.firstName[0] }}</span>
         <div class="stats__contrarian-info">
@@ -328,5 +328,5 @@
 
   </ng-container>
 
-  <div class="stats__bottom-pad"></div>
+  <div class="ff-bottom-pad"></div>
 </div>

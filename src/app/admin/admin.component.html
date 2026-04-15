@@ -1,14 +1,14 @@
 <div class="admin">
 
   <!-- Topbar -->
-  <div class="admin__topbar">
-    <button class="admin__back" (click)="goBack()" aria-label="Go back">
+  <div class="ff-topbar">
+    <button class="ff-icon-btn admin__back" (click)="goBack()" aria-label="Go back">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
         <path d="M12 5L7 10L12 15" stroke="#d4a03a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </button>
-    <span class="admin__title">Settings</span>
-    <div class="admin__spacer"></div>
+    <span class="ff-page-title admin__title">Settings</span>
+    <div class="ff-spacer"></div>
   </div>
 
   <!-- ── Section: Appearance ────────────────────────────────────────────── -->
@@ -104,7 +104,7 @@
         class="admin__member-row"
       >
         <!-- Avatar -->
-        <div class="admin__member-avatar"
+        <div class="ff-avatar admin__member-avatar"
           [style.background-color]="member.avatar_color"
           [style.border-color]="member.avatar_color">
           {{ initial(member) }}
@@ -198,6 +198,6 @@
     </div>
   </section>
 
-  <div class="admin__bottom-pad"></div>
+  <div class="ff-bottom-pad"></div>
 
 </div>

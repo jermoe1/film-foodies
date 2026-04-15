@@ -13,39 +13,11 @@
 
 // ── Topbar ────────────────────────────────────────────────────────────────────
 
-.stats__topbar {
-  position: sticky;
-  top: 0;
-  display: flex;
-  align-items: center;
-  padding: 44px 16px 12px;
-  background: var(--ff-bg);
-  z-index: 10;
-}
-
 .stats__back {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: transparent;
-  border: none;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  flex-shrink: 0;
   &:focus-visible { outline: 2px solid #4070d0; outline-offset: 2px; }
 }
 
-.stats__title {
-  flex: 1;
-  text-align: center;
-  font-family: Georgia, serif;
-  font-size: 0.9375rem;
-  font-weight: 700;
-  color: #4070d0;
-  letter-spacing: 0.5px;
-}
-
-.stats__spacer { width: 36px; flex-shrink: 0; }
+.stats__title { color: #4070d0; }
 
 // ── Loading skeletons ─────────────────────────────────────────────────────────
 
@@ -70,14 +42,6 @@
 
 // ── Empty ─────────────────────────────────────────────────────────────────────
 
-.stats__empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 60px 32px 24px;
-  text-align: center;
-}
 
 .stats__empty-title {
   font-family: Georgia, serif;
@@ -184,13 +148,7 @@
 
 .stats__member-avatar {
   width: 24px; height: 24px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-family: Georgia, serif;
   font-size: 0.6875rem;
-  font-weight: 700;
-  color: #0d0d0d;
-  flex-shrink: 0;
 }
 
 .stats__member-name {
@@ -383,12 +341,8 @@
 
 .stats__split-avatar {
   width: 26px; height: 26px;
-  border-radius: 50%;
   border: 2px solid;
-  display: flex; align-items: center; justify-content: center;
-  font-family: Georgia, serif;
   font-size: 0.625rem;
-  font-weight: 700;
 }
 
 .stats__split-score {
@@ -445,13 +399,7 @@
 
 .stats__contrarian-avatar {
   width: 44px; height: 44px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-family: Georgia, serif;
   font-size: 1.125rem;
-  font-weight: 700;
-  color: #0d0d0d;
-  flex-shrink: 0;
 }
 
 .stats__contrarian-info {
@@ -653,6 +601,3 @@
   flex-shrink: 0;
 }
 
-// ── Bottom pad ────────────────────────────────────────────────────────────────
-
-.stats__bottom-pad { height: 36px; }

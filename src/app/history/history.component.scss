@@ -13,39 +13,11 @@
 
 // ── Topbar ────────────────────────────────────────────────────────────────────
 
-.hist__topbar {
-  position: sticky;
-  top: 0;
-  display: flex;
-  align-items: center;
-  padding: 44px 16px 12px;
-  background: var(--ff-bg);
-  z-index: 10;
-}
-
 .hist__back {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: transparent;
-  border: none;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  flex-shrink: 0;
   &:focus-visible { outline: 2px solid #4070d0; outline-offset: 2px; }
 }
 
-.hist__title {
-  flex: 1;
-  text-align: center;
-  font-family: Georgia, serif;
-  font-size: 0.9375rem;
-  font-weight: 700;
-  color: #4070d0;
-  letter-spacing: 0.5px;
-}
-
-.hist__spacer { width: 36px; flex-shrink: 0; }
+.hist__title { color: #4070d0; }
 
 // ── Loading / empty ───────────────────────────────────────────────────────────
 
@@ -53,14 +25,6 @@
 
 .hist__card-skeleton { height: 82px; border-radius: 10px; }
 
-.hist__empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  padding: 60px 32px 24px;
-  text-align: center;
-}
 
 .hist__empty-title {
   font-family: Georgia, serif;
@@ -390,13 +354,8 @@
 
 .hist__attendee-avatar {
   width: 28px; height: 28px;
-  border-radius: 50%;
   border: 2px solid;
-  display: flex; align-items: center; justify-content: center;
-  font-family: Georgia, serif;
   font-size: 0.75rem;
-  font-weight: 700;
-  flex-shrink: 0;
 }
 
 .hist__attendee-info {
@@ -507,13 +466,7 @@
 
 .hist__note-avatar {
   width: 26px; height: 26px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-family: Georgia, serif;
   font-size: 0.6875rem;
-  font-weight: 700;
-  color: #0d0d0d;
-  flex-shrink: 0;
 }
 
 .hist__note-content { flex: 1; min-width: 0; }
@@ -613,4 +566,3 @@
   &:focus-visible { outline: 2px solid #4070d0; outline-offset: 2px; }
 }
 
-.hist__bottom-pad { height: 36px; }

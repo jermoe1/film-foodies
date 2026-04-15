@@ -1,14 +1,14 @@
 <div class="rate">
 
   <!-- Topbar -->
-  <div class="rate__topbar">
-    <button class="rate__back" (click)="goHome()" aria-label="Go back">
+  <div class="ff-topbar">
+    <button class="ff-icon-btn rate__back" (click)="goHome()" aria-label="Go back">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
         <path d="M12 5L7 10L12 15" stroke="#c04040" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </button>
-    <span class="rate__title">Rate</span>
-    <div class="rate__spacer"></div>
+    <span class="ff-page-title rate__title">Rate</span>
+    <div class="ff-spacer"></div>
   </div>
 
   <!-- ── Loading ──────────────────────────────────────────────────────────── -->
@@ -21,7 +21,7 @@
 
   <!-- ── No pending rating ────────────────────────────────────────────────── -->
 
-  <div class="rate__empty" *ngIf="!loading && noPending">
+  <div class="ff-empty" *ngIf="!loading && noPending">
     <div class="rate__empty-icon">
       <svg width="36" height="36" viewBox="0 0 36 36" fill="none">
         <polygon points="18,4 22,13 32,13 24,20 27,30 18,24 9,30 12,20 4,13 14,13" fill="#c04040" opacity="0.25"/>
@@ -166,6 +166,6 @@
 
   </ng-container>
 
-  <div class="rate__bottom-pad"></div>
+  <div class="ff-bottom-pad"></div>
 
 </div>

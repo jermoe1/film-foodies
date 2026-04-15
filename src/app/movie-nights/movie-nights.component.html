@@ -1,14 +1,14 @@
 <div class="mn">
 
   <!-- Topbar -->
-  <div class="mn__topbar">
-    <button class="mn__back" (click)="goBack()" aria-label="Go back">
+  <div class="ff-topbar">
+    <button class="ff-icon-btn mn__back" (click)="goBack()" aria-label="Go back">
       <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
         <path d="M12 5L7 10L12 15" stroke="#c04040" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
     </button>
-    <span class="mn__title">Log a Movie Night</span>
-    <div class="mn__spacer"></div>
+    <span class="ff-page-title mn__title">Log a Movie Night</span>
+    <div class="ff-spacer"></div>
   </div>
 
   <!-- ── Movie search ────────────────────────────────────────────────────────── -->
@@ -29,7 +29,7 @@
       (keydown.enter)="onSearchEnter()"
       autocomplete="off"
     />
-    <div class="mn__spinner" *ngIf="isSearching"></div>
+    <div class="ff-spinner mn__spinner" *ngIf="isSearching"></div>
   </div>
 
   <!-- Search results -->
@@ -55,7 +55,7 @@
         <span class="mn__result-year" *ngIf="r.releaseYear">{{ r.releaseYear }}</span>
         <span
           *ngIf="r.movieLanguage && !r.movieLanguage.toLowerCase().startsWith('english')"
-          class="mn__result-lang"
+          class="ff-lang-badge"
         >{{ r.movieLanguage.split(', ')[0] }}</span>
       </div>
       <svg width="8" height="8" viewBox="0 0 8 8" fill="none" class="mn__result-chevron">
@@ -147,7 +147,7 @@
         [attr.aria-label]="m.first_name + (attendeeChecked.has(m.id) ? ' (attending)' : ' (not attending)')"
       >
         <span
-          class="mn__attendee-avatar"
+          class="ff-avatar mn__attendee-avatar"
           [style.background-color]="attendeeChecked.has(m.id) ? m.avatar_color : 'transparent'"
           [style.border-color]="m.avatar_color"
           [style.color]="attendeeChecked.has(m.id) ? '#0d0d0d' : m.avatar_color"
@@ -298,6 +298,6 @@
     </button>
   </div>
 
-  <div class="mn__bottom-pad"></div>
+  <div class="ff-bottom-pad"></div>
 
 </div>

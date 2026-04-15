@@ -8,7 +8,7 @@
 
   <!-- ── Checking (brief loading state) ──────────────────────────────────── -->
   <div *ngIf="view === 'checking'" class="select-member__checking">
-    <div class="select-member__spinner"></div>
+    <div class="ff-spinner select-member__spinner"></div>
   </div>
 
   <!-- ── Passcode entry ──────────────────────────────────────────────────── -->
@@ -78,7 +78,7 @@
         [attr.aria-label]="'Select ' + member.first_name"
       >
         <div
-          class="select-member__avatar"
+          class="ff-avatar select-member__avatar"
           [style.background-color]="member.avatar_color"
           [style.border-color]="member.avatar_color"
         >{{ initial(member) }}</div>

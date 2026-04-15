@@ -8,47 +8,21 @@
 // ── Top bar ───────────────────────────────────────────────────────────────────
 
 .topbar {
-  display: flex;
-  align-items: center;
-  padding: 44px 16px 12px;
-  position: sticky;
-  top: 0;
-  background: var(--ff-bg);
-  z-index: 10;
-
   &__title {
-    flex: 1;
-    text-align: center;
-    font-family: Georgia, serif;
-    font-size: 0.9375rem;
+    // font-weight 400 and no margin override ff-page-title defaults
     font-weight: 400;
     color: var(--ff-gold);
     margin: 0;
   }
-
-  &__spacer {
-    width: 36px; // matches back-btn width to keep title centered
-  }
 }
 
 .back-btn {
-  background: none;
-  border: none;
-  padding: 4px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  flex-shrink: 0;
+  padding: 4px; // override ff-icon-btn's padding: 0
 }
 
 // ── Section dividers ──────────────────────────────────────────────────────────
 
 .divider {
-  height: 1px;
-  background: var(--ff-bg-hover);
   margin: 20px 16px;
 }
 
@@ -61,8 +35,3 @@
   color: #5a5a5a;
 }
 
-// ── Bottom padding ────────────────────────────────────────────────────────────
-
-.bottom-pad {
-  height: 36px;
-}

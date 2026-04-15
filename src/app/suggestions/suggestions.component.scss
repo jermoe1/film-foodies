@@ -16,39 +16,13 @@
 
 // ── Topbar ───────────────────────────────────────────────────────────────────
 
-.suggestions__topbar {
-  position: sticky;
-  top: 0;
-  display: flex;
-  align-items: center;
-  padding: 44px 16px 12px;
-  background: var(--ff-bg);
-  z-index: 10;
-  gap: 0;
-}
+.suggestions__topbar { gap: 0; }
 
 .suggestions__back {
-  width: 36px; height: 36px;
-  border-radius: 50%;
-  background: transparent;
-  border: none;
-  display: flex; align-items: center; justify-content: center;
-  cursor: pointer;
-  padding: 0;
-  flex-shrink: 0;
-
   &:focus-visible { outline: 2px solid var(--ff-gold); outline-offset: 2px; }
 }
 
-.suggestions__title {
-  flex: 1;
-  text-align: center;
-  font-family: Georgia, serif;
-  font-size: 0.9375rem;
-  font-weight: 700;
-  color: var(--ff-gold);
-  letter-spacing: 0.5px;
-}
+.suggestions__title { color: var(--ff-gold); }
 
 .suggestions__add-btn {
   width: 36px; height: 36px;
@@ -138,12 +112,7 @@
 // ── Empty state ───────────────────────────────────────────────────────────────
 
 .suggestions__empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
   padding: 60px 32px;
-  gap: 10px;
 }
 
 .suggestions__empty-icon {
@@ -470,8 +439,3 @@
   &:hover { color: var(--ff-text-5); }
 }
 
-// ── Bottom padding ────────────────────────────────────────────────────────────
-
-.suggestions__bottom-pad {
-  height: 36px;
-}
