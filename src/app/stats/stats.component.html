@@ -1,4 +1,332 @@
-<div class="page-placeholder">
-  <h1>Stats</h1>
-  <p>Coming soon.</p>
+<div class="stats">
+
+  <!-- Topbar -->
+  <div class="stats__topbar">
+    <button class="stats__back" (click)="goBack()" aria-label="Go back">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M12 5L7 10L12 15" stroke="#4070d0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <span class="stats__title">Stats</span>
+    <div class="stats__spacer"></div>
+  </div>
+
+  <!-- Loading -->
+  <div class="stats__skeletons" *ngIf="loading">
+    <div class="stats__summary-skeleton">
+      <div class="skeleton stats__tile-skeleton" *ngFor="let i of [1,2,3]"></div>
+    </div>
+    <div class="skeleton stats__block-skeleton"></div>
+    <div class="skeleton stats__block-skeleton"></div>
+    <div class="skeleton stats__block-skeleton stats__block-skeleton--sm"></div>
+  </div>
+
+  <!-- Empty -->
+  <div class="stats__empty" *ngIf="!loading && (!result || result.totalNights === 0)">
+    <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
+      <rect x="5" y="26" width="6" height="9" rx="1.5" fill="#4070d0" opacity="0.3"/>
+      <rect x="14" y="18" width="6" height="17" rx="1.5" fill="#4070d0" opacity="0.5"/>
+      <rect x="23" y="11" width="6" height="24" rx="1.5" fill="#4070d0" opacity="0.7"/>
+      <rect x="32" y="5" width="6" height="30" rx="1.5" fill="#4070d0"/>
+    </svg>
+    <div class="stats__empty-title">No data yet</div>
+    <div class="stats__empty-sub">Stats will appear once movie nights have been rated.</div>
+    <button class="stats__empty-btn" (click)="goBack()">Back to Home</button>
+  </div>
+
+  <!-- Content -->
+  <ng-container *ngIf="!loading && result && result.totalNights > 0">
+
+    <!-- ── Summary tiles ─────────────────────────────────────────────────── -->
+    <div class="stats__summary">
+      <div class="stats__tile">
+        <div class="stats__tile-val">{{ result.totalNights }}</div>
+        <div class="stats__tile-lbl">Nights</div>
+      </div>
+      <div class="stats__tile stats__tile--center">
+        <div
+          class="stats__tile-val"
+          [style.color]="result.groupAvg !== null ? scoreColor(result.groupAvg) : '#555'"
+        >{{ result.groupAvg ?? '—' }}</div>
+        <div class="stats__tile-lbl">Group Avg</div>
+      </div>
+      <div class="stats__tile stats__tile--right">
+        <div class="stats__tile-val">{{ result.totalMembers }}</div>
+        <div class="stats__tile-lbl">Members</div>
+      </div>
+    </div>
+
+    <!-- ── Member Scores ──────────────────────────────────────────────────── -->
+    <div class="stats__section" *ngIf="result.memberAvgs.length">
+      <div class="stats__section-header">Member Scores</div>
+      <div class="stats__member-rows">
+        <div
+          *ngFor="let m of result.memberAvgs; trackBy: trackByMemberId"
+          class="stats__member-row"
+        >
+          <span
+            class="stats__member-avatar"
+            [style.background-color]="m.avatarColor"
+          >{{ m.firstName[0] }}</span>
+          <span class="stats__member-name">{{ m.firstName }}</span>
+          <div class="stats__bar-wrap">
+            <div
+              class="stats__bar"
+              [style.width.%]="barWidth(m.avgScore)"
+              [style.background-color]="m.avgScore !== null ? scoreColor(m.avgScore) : '#2a2a2a'"
+            ></div>
+          </div>
+          <span
+            class="stats__member-score"
+            [style.color]="m.avgScore !== null ? scoreColor(m.avgScore) : '#555'"
+          >{{ m.avgScore ?? '—' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Top Rated ──────────────────────────────────────────────────────── -->
+    <div class="stats__section" *ngIf="result.topFilms.length">
+      <div class="stats__section-header">Top Rated</div>
+      <div class="stats__film-list">
+        <div
+          *ngFor="let film of result.topFilms; let i = index; trackBy: trackByNightId"
+          class="stats__film-row"
+        >
+          <span class="stats__rank">#{{ i + 1 }}</span>
+          <img
+            *ngIf="film.posterUrl"
+            [src]="film.posterUrl"
+            [alt]="film.movieTitle"
+            class="stats__film-poster"
+          />
+          <div *ngIf="!film.posterUrl" class="stats__film-poster stats__film-poster--ph"></div>
+          <span class="stats__film-title">{{ film.movieTitle }}</span>
+          <span class="stats__film-score" [style.color]="scoreColor(film.avgScore)">
+            {{ film.avgScore }}
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Split the Room ────────────────────────────────────────────────── -->
+    <div class="stats__section" *ngIf="result.splitTheRoom.length">
+      <div class="stats__section-header">Split the Room</div>
+      <div class="stats__section-sub">Most polarizing — biggest disagreements</div>
+      <div class="stats__split-list">
+        <div
+          *ngFor="let film of result.splitTheRoom; let i = index; trackBy: trackByNightId"
+          class="stats__split-card"
+        >
+          <div class="stats__split-card-header">
+            <img
+              *ngIf="film.posterUrl"
+              [src]="film.posterUrl"
+              [alt]="film.movieTitle"
+              class="stats__split-poster"
+            />
+            <div *ngIf="!film.posterUrl" class="stats__split-poster stats__split-poster--ph"></div>
+            <div class="stats__split-card-info">
+              <div class="stats__split-rank">#{{ i + 1 }} Most Polarizing</div>
+              <div class="stats__split-title">{{ film.movieTitle }}</div>
+              <div class="stats__split-meta">
+                <span class="stats__sigma">σ {{ film.stdDev }}</span>
+                <span class="stats__split-dot">·</span>
+                <span>avg <strong [style.color]="scoreColor(film.avgScore)">{{ film.avgScore }}</strong></span>
+              </div>
+            </div>
+          </div>
+          <div class="stats__split-scores">
+            <div
+              *ngFor="let ms of film.memberScores; trackBy: trackByMemberScore"
+              class="stats__split-member"
+              [class.stats__split-member--absent]="ms.score === null"
+            >
+              <span
+                class="stats__split-avatar"
+                [style.background-color]="ms.score !== null ? ms.avatarColor : 'transparent'"
+                [style.border-color]="ms.avatarColor"
+                [style.color]="ms.score !== null ? '#0d0d0d' : ms.avatarColor"
+              >{{ ms.firstName[0] }}</span>
+              <span
+                class="stats__split-score"
+                [style.color]="ms.score !== null ? scoreColor(ms.score) : '#3a3a3a'"
+              >{{ ms.score ?? '—' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Perfect Consensus ─────────────────────────────────────────────── -->
+    <div class="stats__section" *ngIf="result.consensus">
+      <div class="stats__section-header">Perfect Consensus</div>
+      <div class="stats__section-sub">Everyone agreed on this one</div>
+      <div class="stats__consensus-card">
+        <img
+          *ngIf="result.consensus.posterUrl"
+          [src]="result.consensus.posterUrl"
+          [alt]="result.consensus.movieTitle"
+          class="stats__consensus-poster"
+        />
+        <div *ngIf="!result.consensus.posterUrl" class="stats__consensus-poster stats__consensus-poster--ph"></div>
+        <div class="stats__consensus-body">
+          <div class="stats__consensus-title">{{ result.consensus.movieTitle }}</div>
+          <div class="stats__split-meta">
+            <span class="stats__sigma">σ {{ result.consensus.stdDev }}</span>
+            <span class="stats__split-dot">·</span>
+            <span>avg <strong [style.color]="scoreColor(result.consensus.avgScore)">{{ result.consensus.avgScore }}</strong></span>
+          </div>
+          <div class="stats__split-scores stats__split-scores--sm">
+            <div
+              *ngFor="let ms of result.consensus.memberScores; trackBy: trackByMemberScore"
+              class="stats__split-member"
+              [class.stats__split-member--absent]="ms.score === null"
+            >
+              <span
+                class="stats__split-avatar"
+                [style.background-color]="ms.score !== null ? ms.avatarColor : 'transparent'"
+                [style.border-color]="ms.avatarColor"
+                [style.color]="ms.score !== null ? '#0d0d0d' : ms.avatarColor"
+              >{{ ms.firstName[0] }}</span>
+              <span
+                class="stats__split-score"
+                [style.color]="ms.score !== null ? scoreColor(ms.score) : '#3a3a3a'"
+              >{{ ms.score ?? '—' }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Contrarian ────────────────────────────────────────────────────── -->
+    <div class="stats__section" *ngIf="result.contrarian">
+      <div class="stats__section-header">Group Contrarian</div>
+      <div class="stats__section-sub">Scores furthest from the group's consensus</div>
+      <div class="stats__contrarian-card">
+        <span
+          class="stats__contrarian-avatar"
+          [style.background-color]="result.contrarian.avatarColor"
+        >{{ result.contrarian.firstName[0] }}</span>
+        <div class="stats__contrarian-info">
+          <div class="stats__contrarian-name">{{ result.contrarian.firstName }}</div>
+          <div class="stats__contrarian-meta">
+            Avg <strong>{{ result.contrarian.avgDeviation }}</strong> pts from group
+            <span class="stats__contrarian-dot">·</span>
+            {{ result.contrarian.ratingCount }} ratings
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Biggest Surprise ───────────────────────────────────────────────── -->
+    <div class="stats__section" *ngIf="result.biggestSurprise">
+      <div class="stats__section-header">Biggest Surprise</div>
+      <div class="stats__section-sub">Exceeded IMDb expectations the most</div>
+      <div class="stats__delta-card">
+        <img
+          *ngIf="result.biggestSurprise.posterUrl"
+          [src]="result.biggestSurprise.posterUrl"
+          [alt]="result.biggestSurprise.movieTitle"
+          class="stats__delta-poster"
+        />
+        <div *ngIf="!result.biggestSurprise.posterUrl" class="stats__delta-poster stats__delta-poster--ph"></div>
+        <div class="stats__delta-info">
+          <div class="stats__delta-title">{{ result.biggestSurprise.movieTitle }}</div>
+          <div class="stats__delta-scores">
+            <span>Group
+              <strong [style.color]="scoreColor(result.biggestSurprise.avgScore)">
+                {{ result.biggestSurprise.avgScore }}
+              </strong>
+            </span>
+            <span class="stats__delta-vs">vs</span>
+            <span>IMDb <strong>{{ result.biggestSurprise.imdbRating }}</strong></span>
+          </div>
+          <div class="stats__delta-badge stats__delta-badge--pos">
+            +{{ result.biggestSurprise.imdbDelta }} vs IMDb
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Most Overhyped ─────────────────────────────────────────────────── -->
+    <div class="stats__section" *ngIf="result.mostOverhyped">
+      <div class="stats__section-header">Most Overhyped</div>
+      <div class="stats__section-sub">Fell furthest below IMDb's score</div>
+      <div class="stats__delta-card">
+        <img
+          *ngIf="result.mostOverhyped.posterUrl"
+          [src]="result.mostOverhyped.posterUrl"
+          [alt]="result.mostOverhyped.movieTitle"
+          class="stats__delta-poster"
+        />
+        <div *ngIf="!result.mostOverhyped.posterUrl" class="stats__delta-poster stats__delta-poster--ph"></div>
+        <div class="stats__delta-info">
+          <div class="stats__delta-title">{{ result.mostOverhyped.movieTitle }}</div>
+          <div class="stats__delta-scores">
+            <span>Group
+              <strong [style.color]="scoreColor(result.mostOverhyped.avgScore)">
+                {{ result.mostOverhyped.avgScore }}
+              </strong>
+            </span>
+            <span class="stats__delta-vs">vs</span>
+            <span>IMDb <strong>{{ result.mostOverhyped.imdbRating }}</strong></span>
+          </div>
+          <div class="stats__delta-badge stats__delta-badge--neg">
+            {{ result.mostOverhyped.imdbDelta }} vs IMDb
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── First Watch vs Rewatch ──────────────────────────────────────────── -->
+    <div
+      class="stats__section"
+      *ngIf="result.firstWatchAvg !== null || result.rewatchAvg !== null"
+    >
+      <div class="stats__section-header">First Watch vs Rewatch</div>
+      <div class="stats__fw-row">
+        <div class="stats__fw-tile" *ngIf="result.firstWatchAvg !== null">
+          <div class="stats__fw-label">1st Watch</div>
+          <div
+            class="stats__fw-score"
+            [style.color]="scoreColor(result.firstWatchAvg)"
+          >{{ result.firstWatchAvg }}<span class="stats__fw-denom">/10</span></div>
+        </div>
+        <div
+          class="stats__fw-divider"
+          *ngIf="result.firstWatchAvg !== null && result.rewatchAvg !== null"
+        >vs</div>
+        <div class="stats__fw-tile stats__fw-tile--right" *ngIf="result.rewatchAvg !== null">
+          <div class="stats__fw-label stats__fw-label--re">Rewatch</div>
+          <div
+            class="stats__fw-score"
+            [style.color]="scoreColor(result.rewatchAvg)"
+          >{{ result.rewatchAvg }}<span class="stats__fw-denom">/10</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── Top Genres ──────────────────────────────────────────────────────── -->
+    <div class="stats__section" *ngIf="result.genres.length">
+      <div class="stats__section-header">Top Genres</div>
+      <div class="stats__genres">
+        <div
+          *ngFor="let g of result.genres; trackBy: trackByGenre"
+          class="stats__genre-row"
+        >
+          <span class="stats__genre-name">{{ g.genre }}</span>
+          <div class="stats__genre-bar-wrap">
+            <div
+              class="stats__genre-bar"
+              [style.width.%]="genreBarWidth(g.count, maxGenreCount(result.genres))"
+            ></div>
+          </div>
+          <span class="stats__genre-count">{{ g.count }}</span>
+        </div>
+      </div>
+    </div>
+
+  </ng-container>
+
+  <div class="stats__bottom-pad"></div>
 </div>

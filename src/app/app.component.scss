@@ -1,6 +1,4 @@
-// App shell — full viewport, no overflow
+// App shell — block container only; each route component manages its own height and scroll
 :host {
   display: block;
-  height: 100vh;
-  overflow: hidden;
 }
