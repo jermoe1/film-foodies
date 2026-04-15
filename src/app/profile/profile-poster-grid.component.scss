@@ -10,7 +10,7 @@
 .section-label {
   font-size: 0.625rem;
   font-weight: 700;
-  color: #8a6030;
+  color: var(--ff-gold-dim);
   text-transform: uppercase;
   letter-spacing: 2px;
 }
@@ -60,7 +60,7 @@
   &__placeholder {
     position: absolute;
     inset: 0;
-    background: linear-gradient(160deg, #1e1a10 0%, #0d0d0d 100%);
+    background: linear-gradient(160deg, #1e1a10 0%, var(--ff-bg) 100%);
   }
 
   &__overlay {
@@ -91,7 +91,7 @@
   &__score {
     font-size: 0.8125rem;
     font-weight: 700;
-    color: #d4a03a;
+    color: var(--ff-gold);
     flex-shrink: 0;
   }
 }
@@ -112,7 +112,7 @@
   &--first {
     background: rgba(212, 160, 58, 0.25);
     border: 1px solid rgba(212, 160, 58, 0.45);
-    color: #d4a03a;
+    color: var(--ff-gold);
   }
 
   &--rewatch {
@@ -151,7 +151,7 @@
     margin-top: 10px;
     font-size: 0.75rem;
     font-weight: 700;
-    color: #d4a03a;
+    color: var(--ff-gold);
     border: 1px solid rgba(212, 160, 58, 0.4);
     border-radius: 20px;
     padding: 6px 16px;

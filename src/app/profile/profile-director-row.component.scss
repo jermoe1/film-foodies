@@ -10,7 +10,7 @@
 .row-label {
   font-size: 0.625rem;
   font-weight: 700;
-  color: #8a6030;
+  color: var(--ff-gold-dim);
   text-transform: uppercase;
   letter-spacing: 2px;
 }
@@ -30,7 +30,7 @@
 .card {
   flex: 1;
   background: #1a1a1a;
-  border: 1px solid #2a2a2a;
+  border: 1px solid var(--ff-border);
   border-radius: 10px;
   padding: 10px 12px;
   min-width: 0;

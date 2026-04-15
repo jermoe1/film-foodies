@@ -18,6 +18,39 @@ html, body {
 }
 
 // =============================================================================
+// Film Foodies design tokens — --ff-* properties used by all components
+// =============================================================================
+:root {
+  // Backgrounds
+  --ff-bg:           #0d0d0d;
+  --ff-bg-card:      #141414;
+  --ff-bg-card-alt:  #161616;
+  --ff-bg-hover:     #1a1a1a;
+  --ff-bg-surface:   #1e1e1e;
+
+  // Borders
+  --ff-border-sub:   #1e1e1e;
+  --ff-border:       #2a2a2a;
+  --ff-border-mid:   #333;
+
+  // Brand
+  --ff-gold:         #d4a03a;
+  --ff-gold-dim:     #8a6030;
+
+  // Semantic
+  --ff-green:        #4a9a5a;
+
+  // Text (opacity ladder: 2 → 7 is progressively dimmer)
+  --ff-text:         #e8e8e8;
+  --ff-text-2:       #ccc;
+  --ff-text-3:       #aaa;
+  --ff-text-4:       #888;
+  --ff-text-5:       #666;
+  --ff-text-6:       #555;
+  --ff-text-7:       #444;
+}
+
+// =============================================================================
 // Theme: Cinema Mode (default dark)
 // Applied to :root — other themes override these via a theme class on <body>
 // =============================================================================
