@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { SupabaseService } from './core/services/supabase.service';
 import { MemberService } from './core/services/member.service';
 import { ThemeService } from './core/services/theme.service';
+import { AuthService } from './core/services/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -14,6 +15,7 @@ export class AppComponent implements OnInit {
     private supabase: SupabaseService,
     private memberService: MemberService,
     private themeService: ThemeService,
+    private authService: AuthService,
     private router: Router
   ) {}
 
@@ -21,7 +23,7 @@ export class AppComponent implements OnInit {
     // Apply saved theme immediately to avoid flash
     this.themeService.init();
 
-    // Restore Supabase connection from local storage
+    // Restore Supabase connection from local storage / environment
     this.supabase.tryInitFromStorage();
 
     if (!this.supabase.isConfigured) {
@@ -31,6 +33,10 @@ export class AppComponent implements OnInit {
       }
       return;
     }
+
+    // If the passcode gate hasn't been passed yet, let the authGuard + select-member handle it.
+    // Don't restore member state until authenticated — the guard will redirect to /select-member.
+    if (!this.authService.isAuthenticated) return;
 
     // Restore member selection from local storage
     this.memberService.tryRestoreMemberFromStorage().subscribe((found) => {

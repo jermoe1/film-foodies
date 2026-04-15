@@ -113,6 +113,81 @@
   text-align: center;
 }
 
+// ── Checking state ────────────────────────────────────────────────────────────
+
+.select-member__checking {
+  display: flex;
+  justify-content: center;
+  padding: 40px 0;
+}
+
+.select-member__spinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid #2a2a2a;
+  border-top-color: #d4a03a;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+// ── Passcode entry ────────────────────────────────────────────────────────────
+
+.select-member__pin-dots {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 28px;
+  cursor: pointer;
+  padding: 8px;
+}
+
+.select-member__pin-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #444;
+  background: transparent;
+  transition: background 0.15s, border-color 0.15s;
+
+  &--filled {
+    background: #d4a03a;
+    border-color: #d4a03a;
+  }
+}
+
+// Visually hidden but focusable — captures all keystrokes
+.select-member__pin-input {
+  position: absolute;
+  opacity: 0;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.select-member__pin-error {
+  color: #c04040;
+  font-size: 0.8rem;
+  text-align: center;
+  margin-top: -16px;
+  margin-bottom: 8px;
+  animation: shake 0.3s ease;
+}
+
+.select-member__pin-verifying {
+  color: #666;
+  font-size: 0.8rem;
+  text-align: center;
+  margin-top: -16px;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-6px); }
+  40%, 80% { transform: translateX(6px); }
+}
+
 // ── Not configured / empty ────────────────────────────────────────────────────
 
 .select-member__unconfigured,

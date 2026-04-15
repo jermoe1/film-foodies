@@ -67,6 +67,34 @@ export class AuthService {
     );
   }
 
+  /**
+   * Check whether a passcode has been configured in app_settings.
+   * Returns false if the DB is unreachable or no passcode hash is stored.
+   */
+  hasPasscode(): Observable<boolean> {
+    try {
+      return from(
+        this.supabase.getClient()
+          .from('app_settings')
+          .select('passcode_hash')
+          .single()
+      ).pipe(
+        map(({ data }) => !!(data as any)?.passcode_hash),
+        catchError(() => of(false))
+      );
+    } catch {
+      return of(false);
+    }
+  }
+
+  /**
+   * Mark the session as authenticated without a passcode check.
+   * Used when no passcode is configured — the user should not be blocked.
+   */
+  markAuthenticated(): void {
+    localStorage.setItem(PASSCODE_KEY, 'true');
+  }
+
   /** Invalidate the cached passcode verification (e.g. after passcode change). */
   clearVerification(): void {
     localStorage.removeItem(PASSCODE_KEY);
