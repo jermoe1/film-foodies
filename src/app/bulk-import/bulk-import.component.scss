@@ -1,1 +1,470 @@
-// placeholder styles — replace when implementing
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: #0d0d0d;
+  color: #e8e8e8;
+  font-family: inherit;
+  overflow-y: auto;
+}
+
+// ── Layout ──────────────────────────────────────────────────────────────────
+
+.bulk {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  max-width: 480px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 16px;
+
+  &__bottom-pad { height: 32px; flex-shrink: 0; }
+}
+
+// ── Topbar ───────────────────────────────────────────────────────────────────
+
+.bulk__topbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 14px 0 12px;
+  flex-shrink: 0;
+}
+
+.bulk__back {
+  width: 36px;
+  height: 36px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  &:focus-visible { outline: 2px solid #d4a03a; outline-offset: 2px; }
+}
+
+.bulk__title {
+  font-size: 1rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: #e8e8e8;
+}
+
+.bulk__spacer { flex: 1; }
+
+// ── Intro ─────────────────────────────────────────────────────────────────────
+
+.bulk__intro {
+  font-size: 0.85rem;
+  color: #888;
+  line-height: 1.5;
+  margin: 0 0 16px;
+}
+
+// ── Template button ───────────────────────────────────────────────────────────
+
+.bulk__template-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: 1px solid #333;
+  color: #d4a03a;
+  font-size: 0.82rem;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: background 0.15s;
+  &:hover { background: rgba(212, 160, 58, 0.06); }
+  &:focus-visible { outline: 2px solid #d4a03a; outline-offset: 2px; }
+}
+
+// ── Drop zone ─────────────────────────────────────────────────────────────────
+
+.bulk__dropzone {
+  border: 1.5px dashed #333;
+  border-radius: 12px;
+  padding: 36px 20px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  transition: border-color 0.15s, background 0.15s;
+
+  &--over {
+    border-color: #d4a03a;
+    background: rgba(212, 160, 58, 0.04);
+  }
+}
+
+.bulk__dropzone-icon { opacity: 0.35; }
+
+.bulk__dropzone-label {
+  font-size: 0.88rem;
+  color: #aaa;
+  margin: 0;
+}
+
+.bulk__dropzone-or {
+  font-size: 0.78rem;
+  color: #555;
+  margin: 0;
+}
+
+.bulk__file-label {
+  display: inline-block;
+  background: #1e1e1e;
+  border: 1px solid #444;
+  color: #ccc;
+  font-size: 0.82rem;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+  &:hover { background: #2a2a2a; }
+}
+
+.bulk__file-input {
+  display: none;
+}
+
+.bulk__paste-btn {
+  background: none;
+  border: none;
+  color: #666;
+  font-size: 0.78rem;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+  &:hover { color: #aaa; }
+}
+
+// ── Paste area ────────────────────────────────────────────────────────────────
+
+.bulk__paste-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.bulk__paste-area {
+  width: 100%;
+  background: #141414;
+  border: 1px solid #333;
+  border-radius: 8px;
+  color: #ddd;
+  font-size: 0.78rem;
+  font-family: 'Courier New', monospace;
+  padding: 10px 12px;
+  resize: vertical;
+  line-height: 1.5;
+  box-sizing: border-box;
+
+  &::placeholder { color: #555; }
+  &:focus { outline: 2px solid #d4a03a; outline-offset: -1px; }
+}
+
+.bulk__paste-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.bulk__paste-cancel {
+  background: none;
+  border: 1px solid #333;
+  color: #888;
+  font-size: 0.85rem;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  &:hover { background: #1a1a1a; }
+}
+
+.bulk__parse-btn {
+  background: #4070d0;
+  border: none;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 8px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+  &:hover { background: #5080e0; }
+  &:focus-visible { outline: 2px solid #d4a03a; outline-offset: 2px; }
+}
+
+.bulk__upload-error {
+  color: #c04040;
+  font-size: 0.82rem;
+  margin-top: 12px;
+}
+
+// ── Preview step ──────────────────────────────────────────────────────────────
+
+.bulk__preview-summary {
+  font-size: 0.85rem;
+  margin-bottom: 14px;
+  padding: 10px 12px;
+  background: #141414;
+  border-radius: 8px;
+  border: 1px solid #2a2a2a;
+}
+
+.bulk__summary-valid {
+  color: #4a9a5a;
+  font-weight: 600;
+}
+
+.bulk__summary-invalid {
+  color: #c04040;
+  font-weight: 600;
+}
+
+.bulk__summary-sep {
+  color: #555;
+  margin: 0 2px;
+}
+
+// ── Table ─────────────────────────────────────────────────────────────────────
+
+.bulk__preview-table-wrap,
+.bulk__ready-table-wrap {
+  overflow-x: auto;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  margin-bottom: 16px;
+}
+
+.bulk__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+}
+
+.bulk__th {
+  background: #1a1a1a;
+  color: #888;
+  font-weight: 500;
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid #2a2a2a;
+  white-space: nowrap;
+
+  &--status { min-width: 110px; }
+  &--title { min-width: 120px; }
+}
+
+.bulk__tr {
+  border-bottom: 1px solid #1e1e1e;
+  &:last-child { border-bottom: none; }
+  &--error { background: rgba(192, 64, 64, 0.04); }
+}
+
+.bulk__td {
+  padding: 7px 10px;
+  color: #ccc;
+  vertical-align: middle;
+
+  &--num { color: #555; width: 32px; }
+  &--title { max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  &--poster { width: 36px; text-align: center; }
+}
+
+.bulk__badge {
+  display: inline-block;
+  font-size: 0.72rem;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-weight: 600;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &--ok { background: rgba(74, 154, 90, 0.18); color: #4a9a5a; }
+  &--err { background: rgba(192, 64, 64, 0.15); color: #c04040; }
+}
+
+.bulk__mini-poster {
+  width: 28px;
+  height: auto;
+  border-radius: 3px;
+  display: block;
+  margin: 0 auto;
+}
+
+.bulk__no-poster { color: #555; }
+
+.bulk__row-year {
+  color: #666;
+  font-size: 0.75rem;
+  margin-left: 4px;
+}
+
+// ── Preview actions ───────────────────────────────────────────────────────────
+
+.bulk__preview-actions,
+.bulk__confirm-actions,
+.bulk__done-actions,
+.bulk__error-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+}
+
+.bulk__back-btn {
+  background: none;
+  border: 1px solid #333;
+  color: #888;
+  font-size: 0.85rem;
+  padding: 9px 18px;
+  border-radius: 8px;
+  cursor: pointer;
+  &:hover { background: #1a1a1a; }
+}
+
+.bulk__enrich-btn,
+.bulk__import-btn {
+  background: #4070d0;
+  border: none;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 9px 22px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+  &:hover:not(:disabled) { background: #5080e0; }
+  &:disabled { opacity: 0.45; cursor: default; }
+  &:focus-visible { outline: 2px solid #d4a03a; outline-offset: 2px; }
+}
+
+.bulk__error-hint {
+  font-size: 0.78rem;
+  color: #888;
+  margin-top: 10px;
+  line-height: 1.5;
+}
+
+// ── Enriching ─────────────────────────────────────────────────────────────────
+
+.bulk__enriching {
+  text-align: center;
+  padding: 48px 0 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.bulk__enriching-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #e8e8e8;
+  margin: 0;
+}
+
+.bulk__progress-bar-track {
+  width: 100%;
+  max-width: 320px;
+  height: 6px;
+  background: #222;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.bulk__progress-bar-fill {
+  height: 100%;
+  background: #4070d0;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.bulk__enriching-sub {
+  font-size: 0.8rem;
+  color: #666;
+  margin: 0;
+}
+
+// ── Confirm ───────────────────────────────────────────────────────────────────
+
+.bulk__confirm-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #e8e8e8;
+  margin: 0 0 14px;
+}
+
+// ── Done ──────────────────────────────────────────────────────────────────────
+
+.bulk__done,
+.bulk__error-state {
+  text-align: center;
+  padding: 56px 0 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.bulk__done-label,
+.bulk__error-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #e8e8e8;
+  margin: 0;
+}
+
+.bulk__error-msg {
+  font-size: 0.82rem;
+  color: #c04040;
+  margin: 0;
+  max-width: 300px;
+  text-align: center;
+  line-height: 1.5;
+}
+
+.bulk__home-btn {
+  background: none;
+  border: 1px solid #333;
+  color: #ccc;
+  font-size: 0.88rem;
+  padding: 9px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  &:hover { background: #1a1a1a; }
+}
+
+.bulk__again-btn {
+  background: #4070d0;
+  border: none;
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 9px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+  &:hover { background: #5080e0; }
+  &:focus-visible { outline: 2px solid #d4a03a; outline-offset: 2px; }
+}
+
+.bulk__error-report {
+  background: none;
+  border: 1px solid #333;
+  color: #888;
+  font-size: 0.78rem;
+  padding: 7px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  &:hover { background: #1a1a1a; color: #ccc; }
+}

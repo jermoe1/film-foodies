@@ -26,6 +26,7 @@
       placeholder="Search by movie title…"
       [value]="query"
       (input)="onQueryChange($any($event.target).value)"
+      (keydown.enter)="onSearchEnter()"
       autocomplete="off"
     />
     <div class="mn__spinner" *ngIf="isSearching"></div>

@@ -1,4 +1,239 @@
-<div class="page-placeholder">
-  <h1>Bulk Import</h1>
-  <p>Coming soon.</p>
+<div class="bulk">
+
+  <!-- Topbar -->
+  <div class="bulk__topbar">
+    <button class="bulk__back" (click)="goHome()" aria-label="Go home">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M12 5L7 10L12 15" stroke="#d4a03a" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+    <span class="bulk__title">Bulk Import</span>
+    <div class="bulk__spacer"></div>
+  </div>
+
+  <!-- ── Step: Upload ─────────────────────────────────────────────────────── -->
+
+  <ng-container *ngIf="step === 'upload'">
+
+    <p class="bulk__intro">
+      Import multiple movie nights at once from a CSV file. Download the template to get started.
+    </p>
+
+    <button class="bulk__template-btn" (click)="downloadTemplate()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+        <path d="M7 2v7M7 9l-2.5-2.5M7 9l2.5-2.5" stroke="#d4a03a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        <rect x="2" y="11" width="10" height="1.5" rx="0.75" fill="#d4a03a"/>
+      </svg>
+      Download CSV template
+    </button>
+
+    <!-- File drop zone -->
+    <div
+      *ngIf="!pasteActive"
+      class="bulk__dropzone"
+      [class.bulk__dropzone--over]="dragOver"
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave()"
+      (drop)="onDrop($event)"
+    >
+      <svg class="bulk__dropzone-icon" width="32" height="32" viewBox="0 0 32 32" fill="none">
+        <rect x="4" y="4" width="24" height="24" rx="3" stroke="#444" stroke-width="1.5" fill="none"/>
+        <path d="M10 14h12M10 18h8M10 10h12" stroke="#444" stroke-width="1.2" stroke-linecap="round"/>
+      </svg>
+      <p class="bulk__dropzone-label">Drop a CSV file here</p>
+      <p class="bulk__dropzone-or">or</p>
+      <label class="bulk__file-label">
+        Choose file
+        <input type="file" accept=".csv" class="bulk__file-input" (change)="onFileChange($event)"/>
+      </label>
+      <button class="bulk__paste-btn" (click)="onPasteText()">Paste CSV text instead</button>
+    </div>
+
+    <!-- Paste textarea -->
+    <div *ngIf="pasteActive" class="bulk__paste-wrap">
+      <textarea
+        class="bulk__paste-area"
+        rows="10"
+        placeholder="Paste your CSV content here…"
+        [value]="csvText"
+        (input)="onTextareaChange($any($event.target).value)"
+      ></textarea>
+      <div class="bulk__paste-actions">
+        <button class="bulk__paste-cancel" (click)="cancelPaste()">Cancel</button>
+        <button class="bulk__parse-btn" (click)="submitPaste()">Preview rows</button>
+      </div>
+    </div>
+
+    <div class="bulk__upload-error" *ngIf="uploadError">{{ uploadError }}</div>
+
+  </ng-container>
+
+  <!-- ── Step: Preview ────────────────────────────────────────────────────── -->
+
+  <ng-container *ngIf="step === 'preview'">
+
+    <div class="bulk__preview-summary">
+      <span class="bulk__summary-valid" *ngIf="validRowCount">{{ validRowCount }} row{{ validRowCount !== 1 ? 's' : '' }} ready</span>
+      <span class="bulk__summary-sep" *ngIf="validRowCount && invalidRowCount"> · </span>
+      <span class="bulk__summary-invalid" *ngIf="invalidRowCount">{{ invalidRowCount }} with errors</span>
+    </div>
+
+    <div class="bulk__preview-table-wrap">
+      <table class="bulk__table">
+        <thead>
+          <tr>
+            <th class="bulk__th">#</th>
+            <th class="bulk__th">Date</th>
+            <th class="bulk__th">Title</th>
+            <th class="bulk__th">Host</th>
+            <th class="bulk__th bulk__th--status">Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            *ngFor="let row of previewRows; trackBy: trackByRowNum"
+            class="bulk__tr"
+            [class.bulk__tr--error]="row.errors.length > 0"
+          >
+            <td class="bulk__td bulk__td--num">{{ row.rowNum }}</td>
+            <td class="bulk__td">{{ row.date || '—' }}</td>
+            <td class="bulk__td bulk__td--title">{{ row.title || row.imdbId || '—' }}</td>
+            <td class="bulk__td">{{ row.host || '—' }}</td>
+            <td class="bulk__td bulk__td--status">
+              <span *ngIf="row.errors.length === 0" class="bulk__badge bulk__badge--ok">Ready</span>
+              <span *ngIf="row.errors.length > 0" class="bulk__badge bulk__badge--err" [title]="row.errors.join('; ')">
+                {{ row.errors[0] }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="bulk__preview-actions">
+      <button class="bulk__back-btn" (click)="backToUpload()">Back</button>
+      <button
+        class="bulk__enrich-btn"
+        [disabled]="!canEnrich"
+        (click)="startEnrich()"
+      >
+        Look up movies ({{ validRowCount }})
+      </button>
+    </div>
+
+    <div class="bulk__error-hint" *ngIf="invalidRowCount">
+      {{ invalidRowCount }} row{{ invalidRowCount !== 1 ? 's' : '' }} with errors will be skipped. Fix them in your CSV and re-import.
+    </div>
+
+  </ng-container>
+
+  <!-- ── Step: Enriching ──────────────────────────────────────────────────── -->
+
+  <ng-container *ngIf="step === 'enriching'">
+
+    <div class="bulk__enriching">
+      <p class="bulk__enriching-label">Looking up movie data…</p>
+      <div class="bulk__progress-bar-track">
+        <div class="bulk__progress-bar-fill" [style.width.%]="enrichProgressPct"></div>
+      </div>
+      <p class="bulk__enriching-sub">
+        {{ enrichProgress.current }} / {{ enrichProgress.total }}
+        <span *ngIf="enrichProgress.title"> — {{ enrichProgress.title }}</span>
+      </p>
+    </div>
+
+  </ng-container>
+
+  <!-- ── Step: Importing (confirm) ───────────────────────────────────────── -->
+
+  <ng-container *ngIf="step === 'importing' && readyRows.length > 0 && !importError">
+
+    <div class="bulk__confirm">
+      <p class="bulk__confirm-label">Ready to import {{ readyRows.length }} movie night{{ readyRows.length !== 1 ? 's' : '' }}</p>
+
+      <div class="bulk__ready-table-wrap">
+        <table class="bulk__table">
+          <thead>
+            <tr>
+              <th class="bulk__th">Date</th>
+              <th class="bulk__th bulk__th--title">Movie</th>
+              <th class="bulk__th">Host</th>
+              <th class="bulk__th">Poster</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let row of readyRows; trackBy: trackByRowNum" class="bulk__tr">
+              <td class="bulk__td">{{ row.date }}</td>
+              <td class="bulk__td bulk__td--title">
+                {{ row.title }}
+                <span class="bulk__row-year" *ngIf="row.releaseYear">({{ row.releaseYear }})</span>
+              </td>
+              <td class="bulk__td">{{ row.host }}</td>
+              <td class="bulk__td bulk__td--poster">
+                <img
+                  *ngIf="row.posterUrl"
+                  [src]="row.posterUrl"
+                  [alt]="row.title"
+                  class="bulk__mini-poster"
+                />
+                <span *ngIf="!row.posterUrl" class="bulk__no-poster">—</span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="bulk__confirm-actions">
+        <button class="bulk__back-btn" (click)="backToUpload()">Start over</button>
+        <button class="bulk__import-btn" [disabled]="isImporting" (click)="confirmImport()">
+          <span *ngIf="!isImporting">Import {{ readyRows.length }} nights</span>
+          <span *ngIf="isImporting">Importing…</span>
+        </button>
+      </div>
+    </div>
+
+  </ng-container>
+
+  <!-- ── Step: Done ───────────────────────────────────────────────────────── -->
+
+  <ng-container *ngIf="step === 'done'">
+
+    <div class="bulk__done">
+      <svg class="bulk__done-icon" width="40" height="40" viewBox="0 0 40 40" fill="none">
+        <circle cx="20" cy="20" r="18" stroke="#4a9a5a" stroke-width="2" fill="none"/>
+        <path d="M13 20l5 5 9-9" stroke="#4a9a5a" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <p class="bulk__done-label">{{ importedCount }} movie night{{ importedCount !== 1 ? 's' : '' }} imported</p>
+      <div class="bulk__done-actions">
+        <button class="bulk__home-btn" (click)="goHome()">Go to home</button>
+        <button class="bulk__again-btn" (click)="startOver()">Import more</button>
+      </div>
+      <button class="bulk__error-report" *ngIf="invalidRowCount" (click)="downloadErrorReport()">
+        Download error report ({{ invalidRowCount }} skipped rows)
+      </button>
+    </div>
+
+  </ng-container>
+
+  <!-- ── Step: Error ──────────────────────────────────────────────────────── -->
+
+  <ng-container *ngIf="step === 'error'">
+
+    <div class="bulk__error-state">
+      <svg class="bulk__error-icon" width="40" height="40" viewBox="0 0 40 40" fill="none">
+        <circle cx="20" cy="20" r="18" stroke="#c04040" stroke-width="2" fill="none"/>
+        <path d="M15 15l10 10M25 15l-10 10" stroke="#c04040" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+      <p class="bulk__error-label">Import failed</p>
+      <p class="bulk__error-msg" *ngIf="importError">{{ importError }}</p>
+      <div class="bulk__error-actions">
+        <button class="bulk__home-btn" (click)="goHome()">Go home</button>
+        <button class="bulk__again-btn" (click)="startOver()">Try again</button>
+      </div>
+    </div>
+
+  </ng-container>
+
+  <div class="bulk__bottom-pad"></div>
+
 </div>

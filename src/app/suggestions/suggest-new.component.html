@@ -23,6 +23,7 @@
       placeholder="Search by movie title…"
       [value]="query"
       (input)="onQueryChange($any($event.target).value)"
+      (keydown.enter)="onSearchEnter()"
       autocomplete="off"
       autofocus
     />

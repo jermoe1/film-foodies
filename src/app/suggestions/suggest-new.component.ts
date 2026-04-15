@@ -6,7 +6,7 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
+import { Subject, merge } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/operators';
 import { MemberService } from '../core/services/member.service';
 import { OmdbService } from '../core/services/omdb.service';
@@ -31,6 +31,7 @@ export class SuggestNewComponent implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
   private readonly query$ = new Subject<string>();
+  private readonly searchNow$ = new Subject<string>();
 
   constructor(
     private omdbService: OmdbService,
@@ -41,10 +42,11 @@ export class SuggestNewComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.query$
+    merge(
+      this.query$.pipe(debounceTime(2500), distinctUntilChanged()),
+      this.searchNow$
+    )
       .pipe(
-        debounceTime(350),
-        distinctUntilChanged(),
         switchMap((q) => {
           if (!q.trim()) {
             this.results = [];
@@ -75,6 +77,12 @@ export class SuggestNewComponent implements OnInit, OnDestroy {
     this.selected = null;
     this.submitError = null;
     this.query$.next(value);
+  }
+
+  onSearchEnter(): void {
+    if (this.query.trim()) {
+      this.searchNow$.next(this.query);
+    }
   }
 
   selectMovie(result: MovieSearchResult): void {

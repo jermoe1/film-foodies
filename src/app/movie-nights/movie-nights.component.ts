@@ -6,7 +6,7 @@ import {
   ChangeDetectorRef,
 } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Subject, forkJoin, of } from 'rxjs';
+import { Subject, forkJoin, of, merge } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/operators';
 import { MemberService, Member } from '../core/services/member.service';
 import { OmdbService } from '../core/services/omdb.service';
@@ -76,6 +76,7 @@ export class MovieNightsComponent implements OnInit, OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
   private readonly query$ = new Subject<string>();
+  private readonly searchNow$ = new Subject<string>();
 
   constructor(
     private route: ActivatedRoute,
@@ -87,11 +88,14 @@ export class MovieNightsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Set up movie search debounce pipeline
-    this.query$
+    // Set up movie search pipeline:
+    // - query$ fires after 2500ms of inactivity (debounce)
+    // - searchNow$ fires immediately on Enter key
+    merge(
+      this.query$.pipe(debounceTime(2500), distinctUntilChanged()),
+      this.searchNow$
+    )
       .pipe(
-        debounceTime(350),
-        distinctUntilChanged(),
         switchMap((q) => {
           if (!q.trim()) {
             this.results = [];
@@ -153,6 +157,12 @@ export class MovieNightsComponent implements OnInit, OnDestroy {
     this.selectedMovie = null;
     this.submitError = null;
     this.query$.next(value);
+  }
+
+  onSearchEnter(): void {
+    if (this.query.trim()) {
+      this.searchNow$.next(this.query);
+    }
   }
 
   selectMovie(result: MovieSearchResult): void {

@@ -120,10 +120,11 @@ film-foodies/
 | MovieNightsModule | `/movie-night` | OMDB search, ?suggestion= pre-fill, host picker, date, attendee 2×3 grid, food fields, advanced options |
 | RatingsModule | `/rate` | 3-step flow: first-watch flag → numeric score → review note + tag chips; dynamic rate bar on home |
 
-### 🔲 Remaining Modules (stub — "Coming soon")
+| HistoryModule | `/history` | Tap-to-expand cards, 3-tab detail (Details / Trivia / Notes) |
+| StatsModule | `/stats` | Group stats: Split the Room, Contrarian, Surprise/Overhyped, genre chart, member score bars |
+| BulkImportModule | `/bulk-import` | CSV drag-drop/paste, OMDB enrichment progress, Supabase RPC transaction, error report download |
+
+### 🔲 Remaining Modules (long-term)
 | Module | Route | Key complexity |
 |---|---|---|
-| HistoryModule | `/history` | Tap-to-expand cards, 3-tab detail (Details / Trivia / Notes) |
-| StatsModule | `/stats` | Charts, "Split the Room", personal vs group toggle |
 | DiscoveryModule | `/discover` | Claude API integration, member_ignores, weekly refresh |
-| BulkImportModule | `/bulk-import` | CSV + row-by-row entry, Supabase RPC transaction |
