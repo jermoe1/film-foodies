@@ -107,12 +107,16 @@
         <div class="suggestions__submeta-row">
           <span class="suggestions__suggested-by">{{ card.suggestedByName }} · {{ relativeDate(card.suggestedAt) }}</span>
           <span *ngIf="isNonEnglish(card)" class="suggestions__lang-badge">{{ languageLabel(card) }}</span>
-          <span
+          <button
             *ngIf="hasWarnings(card)"
             class="suggestions__warn-badge"
             [class.suggestions__warn-badge--moderate]="warningBadgeSeverity(card) === 'moderate'"
             [class.suggestions__warn-badge--severe]="warningBadgeSeverity(card) === 'severe'"
-          >⚠</span>
+            [class.suggestions__warn-badge--open]="isWarningsExpanded(card.id)"
+            (click)="toggleWarnings(card.id); $event.stopPropagation()"
+            [attr.aria-label]="'Toggle content warnings for ' + card.movie.title"
+            [attr.aria-expanded]="isWarningsExpanded(card.id)"
+          >⚠</button>
         </div>
       </div>
 
@@ -153,6 +157,32 @@
           class="suggestions__action-btn suggestions__action-btn--select"
           (click)="onSelectForNight(card)"
         >Select for Movie Night →</button>
+      </div>
+
+      <!-- Expandable warnings panel -->
+      <div
+        class="suggestions__warn-panel"
+        *ngIf="hasWarnings(card) && isWarningsExpanded(card.id)"
+      >
+        <div
+          *ngFor="let w of allWarnings(card)"
+          class="suggestions__warn-item"
+          [class.suggestions__warn-item--moderate]="w.severity === 'moderate'"
+          [class.suggestions__warn-item--severe]="w.severity === 'severe'"
+          [class.suggestions__warn-item--manual]="w.severity === 'manual'"
+        >
+          <span class="suggestions__warn-dot"></span>
+          <span class="suggestions__warn-text">{{ w.text }}</span>
+          <a
+            *ngIf="w.sourceUrl"
+            [href]="w.sourceUrl"
+            target="_blank"
+            rel="noopener"
+            class="suggestions__warn-source"
+            (click)="$event.stopPropagation()"
+          >source ↗</a>
+          <span *ngIf="w.severity === 'manual'" class="suggestions__warn-source">added by suggester</span>
+        </div>
       </div>
 
     </div>

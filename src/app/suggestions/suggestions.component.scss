@@ -193,10 +193,11 @@
   border-radius: 10px;
   display: grid;
   grid-template-columns: 60px 1fr 44px;
-  grid-template-rows: auto auto;
+  grid-template-rows: auto auto auto;
   grid-template-areas:
     "poster info votes"
-    "poster actions actions";
+    "poster actions actions"
+    "warn-panel warn-panel warn-panel";
   gap: 0;
   overflow: hidden;
 }
@@ -325,10 +326,18 @@
 
 .suggestions__warn-badge {
   font-size: 0.6875rem;
-  color: var(--color-severity-mild);
+  color: #d4a03a; // mild default
+  background: none;
+  border: none;
+  padding: 0 2px;
+  cursor: pointer;
+  line-height: 1;
+  transition: opacity 0.15s;
 
-  &--moderate { color: var(--color-severity-moderate); }
-  &--severe   { color: var(--color-severity-severe); }
+  &--moderate { color: #c88040; }
+  &--severe   { color: #c04040; }
+  &--open     { opacity: 0.7; }
+  &:focus-visible { outline: 2px solid var(--ff-gold); outline-offset: 2px; border-radius: 2px; }
 }
 
 // ── Vote column ───────────────────────────────────────────────────────────────
@@ -410,6 +419,55 @@
   }
 
   &:focus-visible { outline: 2px solid var(--ff-gold); outline-offset: 2px; }
+}
+
+// ── Warning panel ─────────────────────────────────────────────────────────────
+
+.suggestions__warn-panel {
+  grid-area: warn-panel;
+  border-top: 1px solid var(--ff-border-sub);
+  padding: 8px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.suggestions__warn-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.72rem;
+  color: var(--ff-text-4);
+
+  &--moderate { color: #c88040; }
+  &--severe   { color: #c04040; }
+  &--manual   { color: var(--ff-text-5); font-style: italic; }
+}
+
+.suggestions__warn-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #d4a03a;
+  flex-shrink: 0;
+
+  .suggestions__warn-item--moderate & { background: #c88040; }
+  .suggestions__warn-item--severe   & { background: #c04040; }
+  .suggestions__warn-item--manual   & { background: var(--ff-border-mid); }
+}
+
+.suggestions__warn-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.suggestions__warn-source {
+  font-size: 0.5625rem;
+  color: var(--ff-text-7);
+  text-decoration: none;
+  flex-shrink: 0;
+
+  &:hover { color: var(--ff-text-5); }
 }
 
 // ── Bottom padding ────────────────────────────────────────────────────────────

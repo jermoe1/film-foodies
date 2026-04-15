@@ -50,6 +50,8 @@ export interface MovieSearchResult {
   imdbUrl: string | null;
   movieLanguage: string | null;
   country: string | null;
+  /** null when the movie is not yet in the movies table or has no warnings on record */
+  contentWarnings: ContentWarning[] | null;
   /** true when the row came from the local movies table */
   inDb: boolean;
 }

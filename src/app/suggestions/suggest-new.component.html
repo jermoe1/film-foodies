@@ -92,10 +92,30 @@
     <button class="suggest-new__change-btn" (click)="clearSelection()">Change movie</button>
   </div>
 
+  <!-- Auto-detected content warnings (from DoesTheDogDie.com) -->
+  <div class="suggest-new__auto-warnings" *ngIf="selected && (isFetchingWarnings || fetchedWarnings.length)">
+    <div class="suggest-new__auto-warn-header">
+      <span class="suggest-new__auto-warn-label">Content warnings</span>
+      <span class="suggest-new__auto-warn-source">via DoesTheDogDie.com</span>
+      <span class="suggest-new__auto-warn-spinner" *ngIf="isFetchingWarnings"></span>
+    </div>
+    <div class="suggest-new__auto-warn-list" *ngIf="!isFetchingWarnings && fetchedWarnings.length">
+      <div
+        *ngFor="let w of fetchedWarnings"
+        class="suggest-new__auto-warn-item"
+        [class.suggest-new__auto-warn-item--moderate]="w.severity === 'moderate'"
+        [class.suggest-new__auto-warn-item--severe]="w.severity === 'severe'"
+      >
+        <span class="suggest-new__auto-warn-dot"></span>
+        <span class="suggest-new__auto-warn-text">{{ w.warning }}</span>
+      </div>
+    </div>
+  </div>
+
   <!-- Manual warnings -->
   <div class="suggest-new__warnings-section" *ngIf="selected">
     <label class="suggest-new__warnings-label" for="manualWarnings">
-      Content warnings (optional)
+      Add your own warnings <span class="suggest-new__warnings-label-note">(optional)</span>
     </label>
     <p class="suggest-new__warnings-hint">
       One per line — e.g. "Flashing lights", "Intense animal scenes"

@@ -2,7 +2,8 @@ import { Injectable } from '@angular/core';
 import { Observable, from, of } from 'rxjs';
 import { map, catchError, switchMap } from 'rxjs/operators';
 import { SupabaseService } from './supabase.service';
-import { MovieSearchResult } from '../../suggestions/suggestions.types';
+import { ContentWarningService } from './content-warning.service';
+import { ContentWarning, MovieSearchResult } from '../../suggestions/suggestions.types';
 import { environment } from '../../../environments/environment';
 
 const OMDB_KEY_STORAGE = 'ff_omdb_key';
@@ -36,7 +37,10 @@ interface OmdbDetail {
 
 @Injectable({ providedIn: 'root' })
 export class OmdbService {
-  constructor(private supabase: SupabaseService) {}
+  constructor(
+    private supabase: SupabaseService,
+    private contentWarningService: ContentWarningService,
+  ) {}
 
   private get apiKey(): string | null {
     // Environment key takes priority (injected at build time via GitHub secrets)
@@ -61,7 +65,7 @@ export class OmdbService {
       ? from(
           client
             .from('movies')
-            .select('id, title, release_year, poster_url, genre, director, runtime, imdb_rating, imdb_id, imdb_url, movie_language, country')
+            .select('id, title, release_year, poster_url, genre, director, runtime, imdb_rating, imdb_id, imdb_url, movie_language, country, content_warnings')
             .ilike('title', `%${query}%`)
             .limit(8)
         ).pipe(
@@ -79,6 +83,7 @@ export class OmdbService {
               imdbUrl: r.imdb_url,
               movieLanguage: r.movie_language,
               country: r.country,
+              contentWarnings: (r.content_warnings as ContentWarning[]) ?? null,
               inDb: true,
             } as MovieSearchResult))
           ),
@@ -108,6 +113,7 @@ export class OmdbService {
                 imdbUrl: `https://www.imdb.com/title/${h.imdbID}/`,
                 movieLanguage: null,
                 country: null,
+                contentWarnings: null,
                 inDb: false,
               }));
             return [...dbResults, ...newFromOmdb];
@@ -156,6 +162,22 @@ export class OmdbService {
               client.from('movies').insert(row).select('id').single()
             ).pipe(
               map(({ data: inserted }) => (inserted?.id as string) ?? null),
+              switchMap((movieId) => {
+                if (!movieId) return of(null as string | null);
+                // Fetch DTDD warnings and persist them alongside the new movie row
+                return this.contentWarningService.fetchWarnings(imdbId).pipe(
+                  switchMap((warnings) => {
+                    if (!warnings.length) return of(movieId);
+                    return from(
+                      client
+                        .from('movies')
+                        .update({ content_warnings: warnings })
+                        .eq('id', movieId)
+                    ).pipe(map(() => movieId), catchError(() => of(movieId)));
+                  }),
+                  catchError(() => of(movieId))
+                );
+              }),
               catchError(() => of(null))
             );
           }),
@@ -164,6 +186,18 @@ export class OmdbService {
       }),
       catchError(() => of(null))
     );
+  }
+
+  /**
+   * Persist content warnings for a movie that was already in the DB but had none.
+   * Fire-and-forget safe — called from suggest-new as a side-effect.
+   */
+  updateContentWarnings(movieId: string, warnings: ContentWarning[]): Observable<void> {
+    const client = this.client;
+    if (!client || !warnings.length) return of(undefined);
+    return from(
+      client.from('movies').update({ content_warnings: warnings }).eq('id', movieId)
+    ).pipe(map(() => undefined), catchError(() => of(undefined)));
   }
 
   private omdbSearch(query: string): Observable<OmdbSearchHit[]> {

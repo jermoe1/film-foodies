@@ -10,6 +10,7 @@ import { MemberService, Member } from '../core/services/member.service';
 import { AuthService } from '../core/services/auth.service';
 import { ThemeService, Theme } from '../core/services/theme.service';
 import { AdminService, AppSettings, AVATAR_COLORS } from '../core/services/admin.service';
+import { DTDD_KEY_STORAGE } from '../core/services/content-warning.service';
 
 const OMDB_KEY = 'ff_omdb_key';
 
@@ -24,6 +25,7 @@ export class AdminComponent implements OnInit {
   supabaseUrl = '';
   supabaseKey = '';
   omdbKey = '';
+  dtddKey = '';
   isSavingConnection = false;
   connectionSaved = false;
   connectionError = '';
@@ -80,6 +82,7 @@ export class AdminComponent implements OnInit {
       } catch { /* ignore */ }
     }
     this.omdbKey = localStorage.getItem(OMDB_KEY) ?? '';
+    this.dtddKey = localStorage.getItem(DTDD_KEY_STORAGE) ?? '';
     this.currentTheme = this.themeService.current;
 
     if (this.supabaseService.isConfigured) {
@@ -124,6 +127,11 @@ export class AdminComponent implements OnInit {
     if (this.omdbKey.trim()) {
       localStorage.setItem(OMDB_KEY, this.omdbKey.trim());
     }
+    if (this.dtddKey.trim()) {
+      localStorage.setItem(DTDD_KEY_STORAGE, this.dtddKey.trim());
+    } else {
+      localStorage.removeItem(DTDD_KEY_STORAGE);
+    }
 
     // Verify the connection by attempting to restore the member
     this.memberService.tryRestoreMemberFromStorage().subscribe(() => {
@@ -143,6 +151,14 @@ export class AdminComponent implements OnInit {
       localStorage.setItem(OMDB_KEY, this.omdbKey.trim());
     } else {
       localStorage.removeItem(OMDB_KEY);
+    }
+  }
+
+  saveDtddKey(): void {
+    if (this.dtddKey.trim()) {
+      localStorage.setItem(DTDD_KEY_STORAGE, this.dtddKey.trim());
+    } else {
+      localStorage.removeItem(DTDD_KEY_STORAGE);
     }
   }
 

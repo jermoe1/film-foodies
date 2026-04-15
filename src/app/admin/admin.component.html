@@ -44,6 +44,12 @@
         [(ngModel)]="omdbKey" autocomplete="off"/>
     </div>
 
+    <div class="admin__field">
+      <label class="admin__label">DoesTheDogDie API Key <span class="admin__label-note">(for content warnings)</span></label>
+      <input class="admin__input admin__input--mono" type="password" placeholder="your-dtdd-key"
+        [(ngModel)]="dtddKey" autocomplete="off"/>
+    </div>
+
     <div class="admin__error" *ngIf="connectionError">{{ connectionError }}</div>
     <div class="admin__success" *ngIf="connectionSaved">Connection saved!</div>
 

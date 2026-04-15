@@ -28,6 +28,7 @@ export class SuggestionsComponent implements OnInit, OnDestroy {
   isLoading = true;
   sort: SortOption = 'oldest';
   deletePending: DeletePending | null = null;
+  expandedWarnings = new Set<string>();
 
   private readonly destroy$ = new Subject<void>();
   private readonly undoCancel$ = new Subject<void>();
@@ -173,6 +174,32 @@ export class SuggestionsComponent implements OnInit, OnDestroy {
     if (warnings.some((w) => w.severity === 'severe')) return 'severe';
     if (warnings.some((w) => w.severity === 'moderate')) return 'moderate';
     return 'mild';
+  }
+
+  toggleWarnings(id: string): void {
+    if (this.expandedWarnings.has(id)) {
+      this.expandedWarnings.delete(id);
+    } else {
+      this.expandedWarnings.add(id);
+    }
+    this.cdr.markForCheck();
+  }
+
+  isWarningsExpanded(id: string): boolean {
+    return this.expandedWarnings.has(id);
+  }
+
+  allWarnings(card: SuggestionCard): { text: string; severity: string; sourceUrl?: string }[] {
+    const auto = (card.movie.contentWarnings ?? []).map((w) => ({
+      text: w.warning,
+      severity: w.severity,
+      sourceUrl: w.source_url,
+    }));
+    const manual = card.manualWarnings.map((w) => ({
+      text: w,
+      severity: 'manual' as string,
+    }));
+    return [...auto, ...manual];
   }
 
   isMySuggestion(card: SuggestionCard): boolean {

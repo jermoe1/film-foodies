@@ -10,8 +10,9 @@ import { Subject, merge } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/operators';
 import { MemberService } from '../core/services/member.service';
 import { OmdbService } from '../core/services/omdb.service';
+import { ContentWarningService } from '../core/services/content-warning.service';
 import { SuggestionsService } from './suggestions.service';
-import { MovieSearchResult } from './suggestions.types';
+import { ContentWarning, MovieSearchResult } from './suggestions.types';
 
 @Component({
   selector: 'app-suggest-new',
@@ -24,6 +25,8 @@ export class SuggestNewComponent implements OnInit, OnDestroy {
   results: MovieSearchResult[] = [];
   isSearching = false;
   selected: MovieSearchResult | null = null;
+  fetchedWarnings: ContentWarning[] = [];
+  isFetchingWarnings = false;
   manualWarnings = '';
   isSubmitting = false;
   submitError: string | null = null;
@@ -35,6 +38,7 @@ export class SuggestNewComponent implements OnInit, OnDestroy {
 
   constructor(
     private omdbService: OmdbService,
+    private contentWarningService: ContentWarningService,
     private suggestionsService: SuggestionsService,
     private memberService: MemberService,
     private router: Router,
@@ -88,6 +92,23 @@ export class SuggestNewComponent implements OnInit, OnDestroy {
   selectMovie(result: MovieSearchResult): void {
     this.selected = result;
     this.results = [];
+    this.fetchedWarnings = result.contentWarnings ?? [];
+    this.isFetchingWarnings = false;
+
+    // For DB movies that already have warnings we're done; otherwise fetch from DTDD
+    if (!this.fetchedWarnings.length && this.contentWarningService.hasApiKey) {
+      this.isFetchingWarnings = true;
+      this.cdr.markForCheck();
+      this.contentWarningService
+        .fetchWarnings(result.imdbId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((warnings) => {
+          this.fetchedWarnings = warnings;
+          this.isFetchingWarnings = false;
+          this.cdr.markForCheck();
+        });
+    }
+
     this.cdr.markForCheck();
   }
 
@@ -95,6 +116,8 @@ export class SuggestNewComponent implements OnInit, OnDestroy {
     this.selected = null;
     this.results = [];
     this.query = '';
+    this.fetchedWarnings = [];
+    this.isFetchingWarnings = false;
     this.manualWarnings = '';
     this.submitError = null;
     this.cdr.markForCheck();
@@ -138,6 +161,12 @@ export class SuggestNewComponent implements OnInit, OnDestroy {
     };
 
     if (this.selected.inDb && this.selected.id) {
+      // Side-effect: persist newly-fetched DTDD warnings for an existing movie that had none
+      if (this.fetchedWarnings.length && !(this.selected.contentWarnings ?? []).length) {
+        this.omdbService
+          .updateContentWarnings(this.selected.id, this.fetchedWarnings)
+          .subscribe();
+      }
       addSuggestion(this.selected.id);
     } else {
       // Fetch full OMDB detail and cache in DB first
