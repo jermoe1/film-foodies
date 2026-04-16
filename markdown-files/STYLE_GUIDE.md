@@ -18,6 +18,7 @@ Read this before touching any code. Companion files: `CONTEXT.md` (product decis
 9. [RxJS Patterns](#9-rxjs-patterns)
 10. [Template Patterns](#10-template-patterns)
 11. [Common Mistakes to Avoid](#11-common-mistakes-to-avoid)
+12. [Shared Utilities Reference](#12-shared-utilities-reference)
 
 ---
 
@@ -77,6 +78,7 @@ $text-muted:     #888;      // Hints, placeholders, meta info
 $text-faint:     #666;      // Very low emphasis
 $text-ghost:     #555;      // Near-invisible supporting text
 $text-disabled:  #444;      // Disabled labels
+$placeholder:    #3a3a3a;   // ::placeholder text on all inputs — CSS var: --ff-placeholder
 
 // Semantic
 $green:          #4a9a5a;   // Success, "ready" badges, checkmarks, attending state
@@ -87,14 +89,12 @@ $score-low:      #c04040;   // Ratings < 5.0
 
 ### Score Color Thresholds
 
+Do not re-implement this in components. Use the shared utility:
+
 ```typescript
-// Use in component helpers
-scoreColor(score: number | null): string {
-  if (score === null) return '#666';
-  if (score >= 7.5)  return '#4a9a5a';
-  if (score >= 5.0)  return '#d4a03a';
-  return '#c04040';
-}
+// shared/util/score.ts
+import { scoreColor } from '../shared/util/score';
+// Returns: '#4a9a5a' (≥7.5), '#d4a03a' (≥5.0), '#c04040' (<5.0), '#666' (null)
 ```
 
 ### Shadows & Overlays
@@ -141,41 +141,32 @@ font-family: Georgia, serif;
 
 ### Topbar
 
-Every detail/form screen has a consistent topbar:
+Every detail/form screen uses the global `ff-topbar` shell. The back button always carries both `ff-icon-btn` (sizing/focus) and a component-scoped class (for any color override). The title is a semantic `<h1>`. Always include `aria-label="Go back"` on the back button.
 
 ```html
-<div class="[prefix]__topbar">
-  <button class="[prefix]__back" (click)="goBack()" aria-label="Go back">
+<div class="ff-topbar">
+  <button class="ff-icon-btn [prefix]__back" (click)="goBack()" aria-label="Go back">
     <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
       <path d="M12 5L7 10L12 15" stroke="#d4a03a" stroke-width="1.8"
             stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </button>
-  <span class="[prefix]__title">Page Title</span>
-  <div class="[prefix]__spacer"></div>
+  <h1 class="ff-page-title [prefix]__title">Page Title</h1>
+  <div class="ff-spacer"></div>
 </div>
 ```
 
+The global classes (`ff-topbar`, `ff-icon-btn`, `ff-page-title`, `ff-spacer`) are defined in `src/styles.scss` — do not redeclare them. Per-component overrides only:
+
 ```scss
-.[prefix]__topbar {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 14px 0 12px;
-  flex-shrink: 0;
-}
+// Only override what differs from global defaults
 .[prefix]__back {
-  width: 36px; height: 36px;
-  background: none; border: none; cursor: pointer; padding: 0;
-  display: flex; align-items: center; justify-content: center;
-  border-radius: 8px;
-  &:focus-visible { outline: 2px solid #d4a03a; outline-offset: 2px; }
+  // No override needed unless the screen uses a non-gold accent
+  // Example for crimson screen: path stroke="#c04040" in SVG
 }
-.[prefix]__title { font-size: 1rem; font-weight: 600; color: #e8e8e8; }
-.[prefix]__spacer { flex: 1; }
 ```
 
-Note: The back chevron uses `#d4a03a` (gold) on most screens. Movie Nights uses `#c04040` (crimson) to match its panel color.
+Note: The back chevron SVG `stroke` color matches the screen's accent color — gold (`#d4a03a`) for most screens, crimson (`#c04040`) for Movie Nights, blue (`#4070d0`) for History/Stats.
 
 ### Section Labels
 
@@ -253,27 +244,52 @@ Apply the `skeleton` class directly to the element. No wrapper needed.
 
 ### Empty State
 
+Use the global `ff-empty` wrapper and its child classes — defined in `src/styles.scss`. Do **not** use a local `class="empty"` on sub-components.
+
 ```html
-<div class="[prefix]__empty">
+<div class="ff-empty">
   <!-- SVG icon -->
-  <p class="[prefix]__empty-title">Headline</p>
-  <p class="[prefix]__empty-sub">Supporting text.</p>
-  <button class="[prefix]__empty-cta" (click)="action()">CTA Label</button>
+  <p class="ff-empty__title">Headline</p>
+  <p class="ff-empty__sub">Supporting text.</p>
+  <button class="ff-empty__btn" (click)="action()">CTA Label</button>
 </div>
 ```
 
-```scss
-.[prefix]__empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  gap: 10px;
-  padding: 48px 24px;
-}
-.[prefix]__empty-title { font-size: 0.95rem; font-weight: 600; color: #e8e8e8; margin: 0; }
-.[prefix]__empty-sub   { font-size: 0.82rem; color: #666; line-height: 1.5; max-width: 260px; margin: 0; }
+All layout, typography, and spacing are handled by the global rules — no component-level empty-state CSS needed. For tighter sizing inside sub-components, use a `ff-empty--compact` modifier (add it to `src/styles.scss` when needed) rather than a local class.
+
+### Gold Ghost Button
+
+The gold affirmative CTA (pill-style or submit style) across multiple screens. Use the global class for the shared background/border/color; override `border-radius` and `height` per-component as needed.
+
+```html
+<button class="ff-btn-gold [prefix]__submit">Submit</button>
 ```
+
+```scss
+// In src/styles.scss — do not redefine locally
+.ff-btn-gold {
+  background: rgba(212, 160, 58, 0.12);
+  border: 1px solid rgba(212, 160, 58, 0.35);
+  color: var(--ff-gold);
+  cursor: pointer;
+  &:active { background: rgba(212, 160, 58, 0.2); }
+}
+
+// Per-component override — radius and height only:
+.[prefix]__submit { height: 48px; border-radius: 10px; font-size: 0.95rem; font-weight: 600; }
+```
+
+### Avatar Size Modifier
+
+The 28×28 attendee avatar size used in Movie Nights and History. Add `ff-avatar--sm` alongside the base `ff-avatar` class:
+
+```html
+<div class="ff-avatar ff-avatar--sm" [style.border-color]="member.avatarColor">
+  {{ member.firstName[0] }}
+</div>
+```
+
+The `ff-avatar--sm` modifier is defined in `src/styles.scss`. The base `ff-avatar` class handles `border-radius`, `display`, `font-family`, `font-weight`, and `color`.
 
 ### Error / Success Inline Messages
 
@@ -328,10 +344,10 @@ Language badge rule: show only when `movieLanguage` is non-null and does NOT sta
 All interactive elements must have:
 
 ```scss
-&:focus-visible { outline: 2px solid #d4a03a; outline-offset: 2px; }
+&:focus-visible { outline: 2px solid var(--ff-gold); outline-offset: 2px; }
 ```
 
-Never use `outline: none` without replacing it with the gold focus ring.
+Use `var(--ff-gold)` — **not** a screen-specific hardcoded color (`#c04040`, `#4070d0`). Gold is the universal focus color regardless of which screen the element appears on. Never use `outline: none` without replacing it with the gold focus ring.
 
 ---
 
@@ -360,19 +376,28 @@ No nesting deeper than `.[prefix]__element { &--modifier {} }`.
 
 ### Host Block
 
-Every component's `:host` is the scroll container:
+Every component's `:host` is the scroll container. Extend the `%ff-page-host` placeholder defined in `src/styles.scss` instead of repeating the full block:
 
 ```scss
+// In your component file — only add what differs from the shared host shell
 :host {
-  display: flex;
-  flex-direction: column;
-  min-height: 100dvh;               // or height: 100dvh for non-scrolling screens
+  @extend %ff-page-host;
+  // Override for non-scrolling screens (home only):
+  // overflow: hidden;
+  // Override for flex-column full-screen (bulk-import):
+  // display: flex; flex-direction: column;
+}
+```
+
+The `%ff-page-host` placeholder expands to:
+```scss
+%ff-page-host {
+  display: block;
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--ff-bg);
+  overflow-y: auto;
   padding-bottom: env(safe-area-inset-bottom, 0px);
-  background: #0d0d0d;
-  color: #e8e8e8;
-  font-family: inherit;
-  overflow-y: auto;                 // on scrollable pages
-  // overflow: hidden;             // only on home (three-panel non-scroll layout)
 }
 ```
 
@@ -424,10 +449,18 @@ Every page content wrapper:
 }
 ```
 
+### Placeholder Color
+
+Use the `--ff-placeholder` CSS variable for all `::placeholder` rules — never hardcode `#3a3a3a`:
+
+```scss
+input::placeholder { color: var(--ff-placeholder); }
+```
+
 ### SCSS Structure Order
 
 Within a component SCSS file, sections appear in this order:
-1. `:host` block
+1. `:host` block (using `@extend %ff-page-host`)
 2. Root container (`.prefix {}`)
 3. Topbar
 4. Section-by-section, top to bottom as they appear in the template
@@ -474,27 +507,32 @@ Never import `CommonModule`, `FormsModule`, or `RouterModule` directly in a feat
 
 ### Component Template
 
+Extend `DestroyComponent` (`shared/util/destroy.ts`) — do not re-declare `destroy$` or `ngOnDestroy` manually. Use `NavigationService` for back/home navigation instead of injecting `Router` directly.
+
 ```typescript
+import { DestroyComponent } from '../shared/util/destroy';
+import { NavigationService } from '../shared/services/navigation.service';
+import { trackById } from '../shared/util/track-by';
+
 @Component({
   selector: 'app-feature',
   templateUrl: './feature.component.html',
   styleUrls: ['./feature.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class FeatureComponent implements OnInit, OnDestroy {
+export class FeatureComponent extends DestroyComponent implements OnInit {
   // Public state (bound in template)
   isLoading = true;
   data: SomeType[] = [];
   submitError: string | null = null;
 
-  // Private
-  private readonly destroy$ = new Subject<void>();
+  readonly trackById = trackById;
 
   constructor(
     private featureService: FeatureService,
-    private router: Router,
+    private nav: NavigationService,
     private cdr: ChangeDetectorRef,
-  ) {}
+  ) { super(); }
 
   ngOnInit(): void {
     this.featureService.getData()
@@ -506,24 +544,17 @@ export class FeatureComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  goBack(): void { this.router.navigate(['/home']); }
-
-  trackById(_: number, item: SomeType): string { return item.id; }
+  goBack(): void { this.nav.goBack(); }
 }
 ```
 
 Rules:
 - Always `ChangeDetectionStrategy.OnPush`
-- Always `takeUntil(this.destroy$)` on every subscription
+- Always `takeUntil(this.destroy$)` on every subscription — including `forkJoin`
 - Always call `this.cdr.markForCheck()` after any async state change
-- Always implement `OnDestroy` if there are any subscriptions
-- `trackBy` functions required on all `*ngFor` lists
+- `trackBy` functions required on all `*ngFor` lists — import from `shared/util/track-by`
 - Never use `async` pipe in templates — subscribe in the component and store in a property
+- Never declare `destroy$` / `ngOnDestroy` manually — they come from `DestroyComponent`
 
 ---
 
@@ -531,17 +562,15 @@ Rules:
 
 ### Service Template
 
+Use `SupabaseService.getClientOrNull()` — do **not** re-declare the `private get client()` try/catch block in each service; that method lives once in `SupabaseService`.
+
 ```typescript
 @Injectable({ providedIn: 'root' })
 export class FeatureService {
   constructor(private supabase: SupabaseService) {}
 
-  private get client() {
-    try { return this.supabase.getClient(); } catch { return null; }
-  }
-
   getData(): Observable<SomeType[]> {
-    const client = this.client;
+    const client = this.supabase.getClientOrNull();
     if (!client) return of([]);
 
     return from(
@@ -551,16 +580,16 @@ export class FeatureService {
         if (error) throw error;
         return (data ?? []) as SomeType[];
       }),
-      catchError(() => of([]))
+      catchError((err) => { console.error('[FeatureService.getData]', err); return of([]); })
     );
   }
 }
 ```
 
 Key rules:
-- `private get client()` pattern with try/catch — never call `getClient()` directly without guarding
+- Always call `this.supabase.getClientOrNull()` — never `getClient()` directly
 - Always wrap Supabase calls in `from()` to get an Observable
-- Always `catchError(() => of(fallback))` — services never throw to components
+- Always `catchError` with at minimum a `console.error` — silent swallowing hides production failures
 - Services return Observables; components subscribe
 
 ### Supabase Query Patterns
@@ -657,13 +686,17 @@ import { authGuard } from './core/guards/auth.guard';
 
 ### Navigation Patterns
 
+Use `NavigationService` (`shared/services/navigation.service.ts`) for back/home navigation — do not inject `Router` directly in components for these common cases:
+
 ```typescript
-// Go back to home
-this.router.navigate(['/home']);
+// In component
+goBack(): void { this.nav.goBack(); }
+goHome(): void { this.nav.goHome(); }
+```
 
-// Go back to parent list
-this.router.navigate(['/suggest']);
+For parameterised navigation, inject `Router` directly:
 
+```typescript
 // Go to movie night with suggestion pre-filled
 this.router.navigate(['/movie-night'], { queryParams: { suggestion: id } });
 ```
@@ -824,6 +857,71 @@ trackById(_: number, item: SomeType): string { return item.id; }
 | Hard-coding `movie_cast` as `cast` | The DB column is `movie_cast`; the TS property is `movieCast` |
 | Using `100vh` only (no `100dvh`) | Always stack: `height: 100vh; height: 100dvh;` for browser fallback |
 | Forgetting `flex-shrink: 0` on topbar | Topbar must not shrink in flex column layouts |
+| Re-declaring `destroy$` and `ngOnDestroy` | Extend `DestroyComponent` — it provides both |
+| Re-declaring `private get client()` try/catch | Call `this.supabase.getClientOrNull()` — defined once in `SupabaseService` |
+| Re-declaring `goBack()` / `goHome()` in every component | Inject `NavigationService` and delegate |
+| Implementing `isNonEnglish()` inline | Use `isNonEnglish(lang)` from `shared/util/language.ts` |
+| Implementing `scoreColor()` inline | Use `scoreColor(score)` from `shared/util/score.ts` |
+| Using a local `class="empty"` on sub-components | Use `class="ff-empty"` — the global utility class |
+| Using per-component `[prefix]__topbar` raw BEM | Use `class="ff-topbar"` — the global wrapper |
+| Omitting `ff-icon-btn` from a back button | Back buttons always take both `ff-icon-btn` and the BEM class |
+| Missing `aria-label="Go back"` on back button | Every back button must have this attribute |
+| Using `#d4a03a` / `#c04040` / `#4070d0` for focus outlines | Focus rings are always `var(--ff-gold)` regardless of screen color |
+| Hardcoding `#3a3a3a` for `::placeholder` | Use `var(--ff-placeholder)` |
+| Silent `catchError` with no logging | Always `console.error(...)` inside `catchError` |
+| Missing `takeUntil` on a `forkJoin` subscription | `forkJoin` subscriptions need teardown just like any other |
+| Re-implementing `trackBy` functions in each component | Import from `shared/util/track-by.ts` |
+
+---
+
+---
+
+## 12. Shared Utilities Reference
+
+Before writing any new logic, check whether a shared utility already covers it. Before writing new SCSS, check whether a global class covers it.
+
+### TypeScript Utilities
+
+| Import path | Export | Purpose |
+|---|---|---|
+| `shared/util/destroy` | `DestroyComponent` | Base class providing `destroy$` Subject and `ngOnDestroy` |
+| `shared/util/track-by` | `trackById`, `trackByMemberId`, `trackByImdbId` | `trackBy` functions for common list types |
+| `shared/util/language` | `isNonEnglish(lang)` | Returns `true` when `lang` is non-null and doesn't start with "English" |
+| `shared/util/date` | `parseYyyyMmDd(s)` | Parses a `YYYY-MM-DD` string to a `Date` without timezone drift |
+| `shared/util/score` | `scoreColor(score)` | Maps a numeric score to its display color string |
+| `shared/constants/app-config` | `MOVIE_SEARCH_DEBOUNCE_MS`, `UNDO_TIMEOUT_MS`, `IMPORT_ROW_DELAY_MS` | App-wide magic values — never hardcode these |
+| `shared/services/navigation.service` | `NavigationService` | `goBack()`, `goHome()` — inject instead of using `Router` directly |
+| `core/services/supabase.service` | `getClientOrNull()` | Safe client accessor — use this instead of `getClient()` |
+
+### Global SCSS Classes / Placeholders (`src/styles.scss`)
+
+| Class / Placeholder | Purpose |
+|---|---|
+| `%ff-page-host` | SCSS placeholder for the standard full-screen `:host` shell |
+| `ff-topbar` | Topbar flex container — every page topbar wrapper |
+| `ff-icon-btn` | Square icon button sizing + focus ring — back buttons and icon actions |
+| `ff-page-title` | Page heading typography — always pair with `<h1>` |
+| `ff-spacer` | `flex: 1` spacer div for topbar trailing gap |
+| `ff-empty` | Empty-state centered flex container |
+| `ff-empty__title` | Empty-state headline typography |
+| `ff-empty__sub` | Empty-state supporting text |
+| `ff-empty__btn` | Empty-state CTA button |
+| `ff-avatar` | Base avatar circle — `border-radius`, `display`, `font-*`, `color` |
+| `ff-avatar--sm` | 28×28 attendee avatar modifier |
+| `ff-btn-gold` | Gold ghost button — `background`, `border`, `color` (override `border-radius`/`height` per-component) |
+| `ff-lang-badge` | Language pill badge — non-English indicator |
+| `ff-search-input` | Movie search input block — wrapper + icon + input rules |
+
+### Planned Shared Components (not yet extracted)
+
+These patterns exist as duplicates today and should be extracted when the relevant files are next touched:
+
+| Component | Replaces | Status |
+|---|---|---|
+| `<app-movie-poster>` | The `*ngIf posterUrl` + placeholder `div` pattern in 9+ files | Planned |
+| `<app-profile-stat-row>` | `profile-genre-row`, `profile-director-row`, `profile-actor-row` templates | Planned |
+| `<app-movie-search-picker>` | Movie search flow in `movie-nights` and `suggest-new` | Planned |
+| `<app-page-topbar>` | Topbar HTML in all 8 route components | Planned (after §3.2/§3.3/§3.4 fixes) |
 
 ---
 

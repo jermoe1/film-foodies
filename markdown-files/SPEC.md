@@ -536,9 +536,14 @@ Grouped with a visual divider — frequent above, management below.
 
 ```
 AppModule (root)
-├── CoreModule — PasscodeService, MemberService, AppSettingsService, ThemeService
-├── SharedModule — RatingInputComponent, MovieCardComponent, PosterThumbnailComponent,
-│                  EmptyStateComponent, ToastComponent
+├── CoreModule — PasscodeService, MemberService, AppSettingsService, ThemeService,
+│               SupabaseService (getClientOrNull), NavigationService
+├── SharedModule — RatingInputComponent, ToastComponent
+│   shared/util/ — DestroyComponent, trackById/trackByMemberId/trackByImdbId,
+│                  isNonEnglish, parseYyyyMmDd, scoreColor
+│   shared/constants/ — MOVIE_SEARCH_DEBOUNCE_MS, UNDO_TIMEOUT_MS, etc.
+│   [planned] — MoviePosterComponent, ProfileStatRowComponent,
+│               MovieSearchPickerComponent, PageTopbarComponent
 ├── HomeModule
 ├── SuggestionsModule
 ├── MovieNightsModule
@@ -554,6 +559,9 @@ AppModule (root)
 ### Key Engineering Decisions
 
 - Supabase client wrapped in Angular services — never called directly from components; returns Observables
+- `SupabaseService.getClientOrNull()` is the one safe client accessor — every service calls this, never `getClient()` directly
+- `DestroyComponent` base class (`shared/util/destroy.ts`) provides `destroy$` and `ngOnDestroy` — components extend it rather than redeclaring the boilerplate
+- `NavigationService` (`shared/services/navigation.service.ts`) provides `goBack()` / `goHome()` — components inject it rather than calling `Router.navigate(['/home'])` directly
 - `deleted_at` soft delete filter applied in `SuggestionsService.getAll()` — never in components
 - 5-second undo toast uses RxJS `timer()` with `takeUntil()` to defer Supabase UPDATE
 - `OmdbService` request queue uses RxJS `concatMap` with `delay()` for bulk import rate limiting
@@ -619,6 +627,8 @@ AppModule (root)
 |---|---|
 | `SPEC.md` | This file — full project specification |
 | `CONTEXT.md` | Key decisions and reasoning from planning phase |
+| `STYLE_GUIDE.md` | Canonical coding patterns and global utilities reference |
+| `REFACTOR_BACKLOG.md` | Prioritised tech-debt and cleanup tasks from the April 2026 audit |
 | `BUILD_PROFILE.md` | Detailed build instructions for the My Profile page |
 | `supabase/schema.sql` | Full database setup script — run once in Supabase SQL Editor |
 | `.github/workflows/deploy.yml` | GitHub Actions CI/CD pipeline |
