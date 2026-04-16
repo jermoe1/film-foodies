@@ -51,112 +51,114 @@ html, body {
 }
 
 // =============================================================================
-// Theme: Cinema Mode (default dark)
-// Applied to :root — other themes override these via a theme class on <body>
+// Body base — uses --ff-* tokens so all components respond to theme changes
 // =============================================================================
-:root {
-  // Panel colors
-  --color-gold: #C8860A;
-  --color-crimson: #8B1A1A;
-  --color-midnight: #1A2A4A;
-
-  // Surface
-  --color-bg: #0f0f0f;
-  --color-surface: #1a1a1a;
-  --color-surface-raised: #242424;
-
-  // Text
-  --color-text: #f5f5f5;
-  --color-text-muted: rgba(245, 245, 245, 0.6);
-  --color-text-disabled: rgba(245, 245, 245, 0.35);
-
-  // Borders
-  --color-border: rgba(255, 255, 255, 0.12);
-
-  // Interactive
-  --color-accent: #C8860A;
-  --color-danger: #E53935;
-
-  // Severity badges (content warnings)
-  --color-severity-mild: #F9A825;
-  --color-severity-moderate: #EF6C00;
-  --color-severity-severe: #C62828;
-}
-
 body {
-  background-color: var(--color-bg);
-  color: var(--color-text);
+  background-color: var(--ff-bg);
+  color: var(--ff-text);
 }
 
 // =============================================================================
 // Theme: Lobby Mode (light)
 // =============================================================================
 body.theme-lobby {
-  --color-bg: #F5F0E8;
-  --color-surface: #FFFFFF;
-  --color-surface-raised: #FAFAFA;
-  --color-text: #1a1a1a;
-  --color-text-muted: rgba(26, 26, 26, 0.6);
-  --color-text-disabled: rgba(26, 26, 26, 0.35);
-  --color-border: rgba(0, 0, 0, 0.12);
+  --ff-bg:          #F5F0E8;
+  --ff-bg-card:     #FFFFFF;
+  --ff-bg-card-alt: #FAFAFA;
+  --ff-bg-hover:    #EDEAE3;
+  --ff-bg-surface:  #FFFFFF;
+  --ff-border-sub:  #E8E3DC;
+  --ff-border:      #D5CFC8;
+  --ff-border-mid:  #C0BAB2;
+  --ff-gold:        #C8860A;
+  --ff-gold-dim:    #9a6420;
+  --ff-green:       #2d7a3a;
+  --ff-text:        #1a1a1a;
+  --ff-text-2:      #333333;
+  --ff-text-3:      #555555;
+  --ff-text-4:      #777777;
+  --ff-text-5:      #999999;
+  --ff-text-6:      #aaaaaa;
+  --ff-text-7:      #bbbbbb;
 }
 
 // =============================================================================
 // Theme: High Contrast
 // =============================================================================
 body.theme-high-contrast {
-  --color-bg: #000000;
-  --color-surface: #111111;
-  --color-surface-raised: #1c1c1c;
-  --color-text: #ffffff;
-  --color-text-muted: rgba(255, 255, 255, 0.75);
-  --color-text-disabled: rgba(255, 255, 255, 0.4);
-  --color-border: rgba(255, 255, 255, 0.25);
-  --color-accent: #FFD700;
-  --color-danger: #FF4444;
+  --ff-bg:          #000000;
+  --ff-bg-card:     #111111;
+  --ff-bg-card-alt: #161616;
+  --ff-bg-hover:    #1a1a1a;
+  --ff-bg-surface:  #1c1c1c;
+  --ff-border-sub:  #222222;
+  --ff-border:      #3a3a3a;
+  --ff-border-mid:  #4a4a4a;
+  --ff-gold:        #FFD700;
+  --ff-gold-dim:    #b09400;
+  --ff-text:        #ffffff;
+  --ff-text-2:      #e8e8e8;
+  --ff-text-3:      #cccccc;
+  --ff-text-4:      #aaaaaa;
+  --ff-text-5:      #888888;
+  --ff-text-6:      #666666;
+  --ff-text-7:      #555555;
 }
 
 // =============================================================================
 // Theme: Anti-Glare (outdoor readable)
 // =============================================================================
 body.theme-anti-glare {
-  --color-bg: #2a2a2a;
-  --color-surface: #363636;
-  --color-surface-raised: #404040;
-  --color-text: #e8e0d0;
-  --color-text-muted: rgba(232, 224, 208, 0.6);
-  --color-text-disabled: rgba(232, 224, 208, 0.35);
-  --color-border: rgba(232, 224, 208, 0.15);
-  --color-accent: #B8730A;
-  --color-danger: #CC3333;
+  --ff-bg:          #2a2a2a;
+  --ff-bg-card:     #363636;
+  --ff-bg-card-alt: #3a3a3a;
+  --ff-bg-hover:    #3e3e3e;
+  --ff-bg-surface:  #404040;
+  --ff-border-sub:  #404040;
+  --ff-border:      #4a4a4a;
+  --ff-border-mid:  #555555;
+  --ff-gold:        #B8730A;
+  --ff-gold-dim:    #8a5408;
+  --ff-green:       #3a8a4a;
+  --ff-text:        #e8e0d0;
+  --ff-text-2:      #d4ccbc;
+  --ff-text-3:      #b8b0a0;
+  --ff-text-4:      #9a9288;
+  --ff-text-5:      #7c7470;
+  --ff-text-6:      #68605c;
+  --ff-text-7:      #544c48;
 }
 
 // =============================================================================
 // Theme: Colorblind (deuteranopia-safe — no red/green reliance)
 // =============================================================================
 body.theme-colorblind {
-  --color-accent: #1A4A8B;
-  --color-gold: #1A4A8B;
-  --color-crimson: #804000;
-  --color-danger: #FF8C00;
-  --color-severity-mild: #0088CC;
-  --color-severity-moderate: #FF8C00;
-  --color-severity-severe: #CC4400;
+  --ff-gold:     #1A4A8B;
+  --ff-gold-dim: #0d2d5a;
 }
 
 // =============================================================================
 // Theme: Forest Mode
 // =============================================================================
 body.theme-forest {
-  --color-bg: #0a2a0a;
-  --color-surface: #122012;
-  --color-surface-raised: #1a2c1a;
-  --color-text: #e0eed8;
-  --color-text-muted: rgba(224, 238, 216, 0.6);
-  --color-text-disabled: rgba(224, 238, 216, 0.35);
-  --color-border: rgba(224, 238, 216, 0.12);
-  --color-accent: #4A8B2A;
-  --color-danger: #CC3333;
+  --ff-bg:          #0a2a0a;
+  --ff-bg-card:     #122012;
+  --ff-bg-card-alt: #162a16;
+  --ff-bg-hover:    #1a2c1a;
+  --ff-bg-surface:  #1e301e;
+  --ff-border-sub:  #1e301e;
+  --ff-border:      #243a24;
+  --ff-border-mid:  #2a4a2a;
+  --ff-gold:        #4A8B2A;
+  --ff-gold-dim:    #2d5a18;
+  --ff-green:       #4a8b2a;
+  --ff-text:        #e0eed8;
+  --ff-text-2:      #ccdcc4;
+  --ff-text-3:      #aabca4;
+  --ff-text-4:      #8a9c84;
+  --ff-text-5:      #6a7c64;
+  --ff-text-6:      #586a52;
+  --ff-text-7:      #445840;
 }
 
 // =============================================================================
