@@ -158,3 +158,11 @@ Scores are stored as `##.#` decimals on a 0.0–10.0 scale.
 - **Postgres trigger auto-populates `movie_night_attendees`** on every INSERT to `movie_nights` — Angular never writes to that table directly
 - **OMDB data is cached** in the `movies` table to protect the 1,000 calls/day limit; monthly auto-refresh pauses at 500 calls/day and resumes the next day
 - **Discovery / AI features** are never labelled as "AI" in the UI — the group has AI-averse members; the feature is called "Discover Movies"
+
+### Adding a New Theme
+
+The app ships with six themes defined in `src/styles.scss` via CSS custom property blocks scoped to `[data-theme="<name>"]` attributes. To design a new theme, use the following prompt with an AI assistant:
+
+> **New theme prompt:**
+>
+> "I'm adding a new visual theme to a Film Foodies Angular app. The app uses CSS custom properties scoped to a `[data-theme]` attribute. The existing tokens are: `--ff-bg`, `--ff-bg-surface`, `--ff-bg-card`, `--ff-border`, `--ff-text`, `--ff-text-2`, `--ff-text-3`, `--ff-text-4`, `--ff-text-5`, `--ff-gold`, `--ff-gold-hover`, `--ff-red`, `--ff-green`, `--ff-shadow`, `--ff-overlay`. Current themes for reference: dark (default), light, high-contrast, colorblind, outdoor, forest. Design a new theme called `[THEME NAME]` with the aesthetic `[DESCRIBE MOOD/PALETTE]`. Return a complete `[data-theme="[THEME NAME]"] { ... }` CSS block with values for every token listed above, and a short rationale for each color choice."

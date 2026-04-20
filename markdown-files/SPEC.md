@@ -609,15 +609,12 @@ AppModule (root)
 | 1 | TODO: Review "Movie Night" label on panel 2 with group after launch | Low |
 | 2 | Emoji tag list — confirm final set with group | Low |
 | 3 | Present rating scale comparison to group; numeric 0–10 active until group decides | Low |
-| 4 | Pre-watch expectation field — deferred to future version | Future |
-| 5 | Additional fun themes — to be added at later date | Future |
-| 6 | World map stat (countries watched) — deferred to future version | Future |
-| 7 | CSV import template — design column headers before bulk import session | Medium |
-| 8 | Member names — replace placeholder names before launch (Jerry pre-seeded) | High |
-| 9 | Site passcode — agree on 6-character passcode with group before launch | High |
-| 10 | Historical data entry — plan bulk import session for 25+ past movie nights | High |
-| 11 | API keys — confirm Supabase URL, publishable key, and OMDB key are ready | High |
-| 12 | DoesTheDogDie.com API — confirm access and response format before build | High |
+| 4 | CSV import template — design column headers before bulk import session | Medium |
+| 5 | Member names — replace placeholder names before launch (Jerry pre-seeded) | High |
+| 6 | Site passcode — agree on 6-character passcode with group before launch | High |
+| 7 | Historical data entry — plan bulk import session for 25+ past movie nights | High |
+| 8 | API keys — confirm Supabase URL, publishable key, and OMDB key are ready | High |
+| 9 | DoesTheDogDie.com API — confirm access and response format before build | High |
 
 ---
 

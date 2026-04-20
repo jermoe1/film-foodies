@@ -52,12 +52,6 @@ Structural improvements that reduce duplication and prevent new instances of the
 - [ ] **`.ff-btn-gold`** — Add the gold ghost button (`rgba(212,160,58,0.12)` background, `rgba(212,160,58,0.35)` border, `var(--ff-gold)` color, `:active` state) to `styles.scss`. Replace 4 component-local copies in `suggestions`, `select-member`, `suggest-new`, `admin`. (SCSS audit §2.10)
 - [ ] **`%ff-page-host`** — Add SCSS placeholder for the canonical full-screen `:host` shell. Replace the verbatim `:host` block in 9 files with `@extend %ff-page-host`. (SCSS audit §2.2)
 
-### HTML dead code removal
-
-- [ ] **`profile-poster-grid.component.html:4`** — Remove the hardcoded `disabled` sort button (bottom sheet not implemented). (HTML audit §1)
-- [ ] **`rating-input.component.html:24–36`** — Remove the two stub `*ngSwitchCase` blocks for `stars-whole` and `stars-half` (or convert to comment-only note). (HTML audit §1)
-- [ ] **`rating-input.component.ts:23`** — Remove dead `stars-whole` / `stars-half` enum values (or document them as explicitly stubbed). (TS audit §1)
-
 ### Profile stylesheet deduplication
 
 - [ ] **Create `src/app/profile/_profile-row.scss`** — Extract the 70 identical lines shared by `profile-genre-row`, `profile-director-row`, `profile-actor-row` into a shared partial. Also include the `.section-header` / `.section-label` rules shared by `profile-trend-chart`, `profile-poster-grid`, `profile-suggestions`. Then `@use` the partial in each component file. (SCSS audit §2.1, §2.8)

@@ -11,8 +11,7 @@ import { FormControl, Validators } from '@angular/forms';
  *   - Stats
  *   - Bulk Import CSV mapping
  *
- * Active scale: numeric 0.0–10.0 (one decimal place).
- * Star modes are stubbed and intentionally not exposed in the UI.
+ * Scale: numeric 0.0–10.0 (one decimal place).
  */
 @Component({
   selector: 'app-rating-input',
@@ -20,8 +19,7 @@ import { FormControl, Validators } from '@angular/forms';
   styleUrls: ['./rating-input.component.scss'],
 })
 export class RatingInputComponent implements OnInit, OnChanges {
-  /** Determines which rating UX to render. Only 'numeric' is functional in v1. */
-  @Input() mode: 'numeric' | 'stars-whole' | 'stars-half' = 'numeric';
+  @Input() mode: 'numeric' = 'numeric';
 
   /** Current rating value (0.0–10.0, one decimal). Null = not yet rated. */
   @Input() value: number | null = null;
