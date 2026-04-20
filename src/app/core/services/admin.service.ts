@@ -25,9 +25,7 @@ export const AVATAR_COLORS = [
 export class AdminService {
   constructor(private supabase: SupabaseService) {}
 
-  private get client() {
-    try { return this.supabase.getClient(); } catch { return null; }
-  }
+  private get client() { return this.supabase.getClientOrNull(); }
 
   // ── App Settings ─────────────────────────────────────────────────────────
 

@@ -68,9 +68,7 @@ export interface HistoryFact {
 export class HistoryService {
   constructor(private supabase: SupabaseService) {}
 
-  private get client() {
-    try { return this.supabase.getClient(); } catch { return null; }
-  }
+  private get client() { return this.supabase.getClientOrNull(); }
 
   /**
    * Load all movie nights (newest first) with movie info, host, attendees, and ratings.

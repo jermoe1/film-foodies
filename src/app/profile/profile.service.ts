@@ -15,14 +15,7 @@ import {
 export class ProfileService {
   constructor(private supabase: SupabaseService) {}
 
-  /** Returns the Supabase client, or null if not yet configured. */
-  private get client() {
-    try {
-      return this.supabase.getClient();
-    } catch {
-      return null;
-    }
-  }
+  private get client() { return this.supabase.getClientOrNull(); }
 
   // ── Section 1: Header stats ─────────────────────────────────────────────────
 

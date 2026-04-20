@@ -1,14 +1,13 @@
 import {
   Component,
   OnInit,
-  OnDestroy,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
 } from '@angular/core';
-import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MemberService, Member } from '../core/services/member.service';
+import { DestroyComponent } from '../shared/util/destroy';
+import { NavigationService } from '../shared/services/navigation.service';
 import {
   BulkImportService,
   PreviewRow,
@@ -26,7 +25,7 @@ type Step = 'upload' | 'preview' | 'enriching' | 'importing' | 'done' | 'error';
   styleUrls: ['./bulk-import.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BulkImportComponent implements OnInit, OnDestroy {
+export class BulkImportComponent extends DestroyComponent implements OnInit {
   step: Step = 'upload';
 
   // Upload step
@@ -55,14 +54,12 @@ export class BulkImportComponent implements OnInit, OnDestroy {
   // Error report
   failedRows: PreviewRow[] = [];
 
-  private readonly destroy$ = new Subject<void>();
-
   constructor(
+    private nav: NavigationService,
     private bulkImport: BulkImportService,
     private memberService: MemberService,
-    private router: Router,
     private cdr: ChangeDetectorRef,
-  ) {}
+  ) { super(); }
 
   ngOnInit(): void {
     this.memberService.getAllMembers()
@@ -71,11 +68,6 @@ export class BulkImportComponent implements OnInit, OnDestroy {
         this.members = members;
         this.cdr.markForCheck();
       });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   // ── Upload step ─────────────────────────────────────────────────────────────
@@ -273,9 +265,7 @@ export class BulkImportComponent implements OnInit, OnDestroy {
     URL.revokeObjectURL(url);
   }
 
-  goHome(): void {
-    this.router.navigate(['/home']);
-  }
+  goHome(): void { this.nav.goHome(); }
 
   startOver(): void {
     this.step = 'upload';

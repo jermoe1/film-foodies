@@ -1,9 +1,9 @@
-import { Component, OnInit, OnDestroy, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
+import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { takeUntil } from 'rxjs/operators';
 import { MemberService } from '../core/services/member.service';
 import { RatingsService, PendingRating } from '../ratings/ratings.service';
+import { DestroyComponent } from '../shared/util/destroy';
+import { NavigationService } from '../shared/services/navigation.service';
 
 @Component({
   selector: 'app-home',
@@ -11,19 +11,17 @@ import { RatingsService, PendingRating } from '../ratings/ratings.service';
   styleUrls: ['./home.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent extends DestroyComponent implements OnInit {
   menuOpen = false;
   pendingRating: PendingRating | null = null;
   rateBarLoaded = false;
 
-  private readonly destroy$ = new Subject<void>();
-
   constructor(
-    private router: Router,
+    private nav: NavigationService,
     private memberService: MemberService,
     private ratingsService: RatingsService,
     private cdr: ChangeDetectorRef,
-  ) {}
+  ) { super(); }
 
   ngOnInit(): void {
     const memberId = this.memberService.currentMember?.id;
@@ -43,14 +41,9 @@ export class HomeComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   navigate(path: string): void {
     this.menuOpen = false;
-    this.router.navigate([`/${path}`]);
+    this.nav.goTo(path);
   }
 
   toggleMenu(event: Event): void {

@@ -51,6 +51,14 @@ export class SupabaseService {
   }
 
   /**
+   * Returns the client if initialized, or null. Safe to call without an
+   * isConfigured check — preferred over getClient() inside services.
+   */
+  getClientOrNull(): SupabaseClient | null {
+    return this.client;
+  }
+
+  /**
    * Returns the initialized Supabase client.
    * Throws if not yet configured — callers should check isConfigured first.
    */

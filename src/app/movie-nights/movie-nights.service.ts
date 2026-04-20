@@ -24,9 +24,7 @@ export interface MovieNightPayload {
 export class MovieNightsService {
   constructor(private supabase: SupabaseService) {}
 
-  private get client() {
-    try { return this.supabase.getClient(); } catch { return null; }
-  }
+  private get client() { return this.supabase.getClientOrNull(); }
 
   /**
    * Load a suggestion's movie data for pre-filling the form.

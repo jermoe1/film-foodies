@@ -83,9 +83,7 @@ export interface StatsResult {
 export class StatsService {
   constructor(private supabase: SupabaseService) {}
 
-  private get client() {
-    try { return this.supabase.getClient(); } catch { return null; }
-  }
+  private get client() { return this.supabase.getClientOrNull(); }
 
   getStats(): Observable<StatsResult | null> {
     const client = this.client;

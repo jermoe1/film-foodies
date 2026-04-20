@@ -11,6 +11,9 @@ import { takeUntil } from 'rxjs/operators';
 import { MemberService } from '../core/services/member.service';
 import { SuggestionsService } from './suggestions.service';
 import { SuggestionCard, SortOption } from './suggestions.types';
+import { DestroyComponent } from '../shared/util/destroy';
+import { NavigationService } from '../shared/services/navigation.service';
+import { isNonEnglish } from '../shared/util/language';
 
 interface DeletePending {
   id: string;
@@ -23,30 +26,29 @@ interface DeletePending {
   styleUrls: ['./suggestions.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SuggestionsComponent implements OnInit, OnDestroy {
+export class SuggestionsComponent extends DestroyComponent implements OnInit, OnDestroy {
   cards: SuggestionCard[] = [];
   isLoading = true;
   sort: SortOption = 'oldest';
   deletePending: DeletePending | null = null;
   expandedWarnings = new Set<string>();
 
-  private readonly destroy$ = new Subject<void>();
   private readonly undoCancel$ = new Subject<void>();
 
   constructor(
+    private nav: NavigationService,
     private suggestionsService: SuggestionsService,
     private memberService: MemberService,
     private router: Router,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { super(); }
 
   ngOnInit(): void {
     this.loadQueue();
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+  override ngOnDestroy(): void {
+    super.ngOnDestroy();
     this.undoCancel$.next();
     this.undoCancel$.complete();
   }
@@ -95,7 +97,7 @@ export class SuggestionsComponent implements OnInit, OnDestroy {
 
   trackById(_: number, card: SuggestionCard): string { return card.id; }
 
-  goBack(): void { this.router.navigate(['/home']); }
+  goBack(): void { this.nav.goHome(); }
   goSuggest(): void { this.router.navigate(['/suggest/new']); }
 
   // ── Voting ─────────────────────────────────────────────────────────────────
@@ -156,9 +158,7 @@ export class SuggestionsComponent implements OnInit, OnDestroy {
   }
 
   isNonEnglish(card: SuggestionCard): boolean {
-    const lang = card.movie.movieLanguage;
-    if (!lang) return false;
-    return !lang.toLowerCase().startsWith('english');
+    return isNonEnglish(card.movie.movieLanguage);
   }
 
   languageLabel(card: SuggestionCard): string {

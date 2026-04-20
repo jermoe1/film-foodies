@@ -66,9 +66,7 @@ export class BulkImportService {
     private omdb: OmdbService,
   ) {}
 
-  private get client() {
-    try { return this.supabase.getClient(); } catch { return null; }
-  }
+  private get client() { return this.supabase.getClientOrNull(); }
 
   // ── Parse + validate ────────────────────────────────────────────────────────
 

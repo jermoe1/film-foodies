@@ -1,14 +1,14 @@
 import {
   Component,
   OnInit,
-  OnDestroy,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
 } from '@angular/core';
-import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { StatsService, StatsResult, NightStat, MemberAvg, GenreStat } from './stats.service';
+import { DestroyComponent } from '../shared/util/destroy';
+import { NavigationService } from '../shared/services/navigation.service';
+import { scoreColor } from '../shared/util/score';
 
 @Component({
   selector: 'app-stats',
@@ -16,17 +16,15 @@ import { StatsService, StatsResult, NightStat, MemberAvg, GenreStat } from './st
   styleUrls: ['./stats.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class StatsComponent implements OnInit, OnDestroy {
+export class StatsComponent extends DestroyComponent implements OnInit {
   loading = true;
   result: StatsResult | null = null;
 
-  private readonly destroy$ = new Subject<void>();
-
   constructor(
-    private router: Router,
+    private nav: NavigationService,
     private statsService: StatsService,
     private cdr: ChangeDetectorRef,
-  ) {}
+  ) { super(); }
 
   ngOnInit(): void {
     this.statsService
@@ -39,22 +37,11 @@ export class StatsComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  goBack(): void {
-    this.router.navigate(['/home']);
-  }
+  goBack(): void { this.nav.goHome(); }
 
   // ── Color helpers ────────────────────────────────────────────────────────────
 
-  scoreColor(score: number): string {
-    if (score >= 7.5) return '#4a9a5a';
-    if (score >= 5.0) return '#d4a03a';
-    return '#c04040';
-  }
+  scoreColor(score: number): string { return scoreColor(score); }
 
   deltaColor(delta: number): string {
     if (delta > 0) return '#4a9a5a';

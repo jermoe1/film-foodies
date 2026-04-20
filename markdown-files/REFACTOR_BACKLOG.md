@@ -16,7 +16,7 @@ These are one- or two-line changes that close known correctness or accessibility
 
 ### SCSS fixes
 
-- [ ] **`rating-input.component.scss:41–46`** — Delete the `.rating-stub` ruleset (commented "not visible in production UI"). (SCSS audit §1)
+- [x] **`rating-input.component.scss:41–46`** — Delete the `.rating-stub` ruleset (commented "not visible in production UI"). (SCSS audit §1)
 - [ ] **`profile.component.scss:1–7`** — Add `min-height: 100dvh` (after the existing `100vh` line) and `padding-bottom: env(safe-area-inset-bottom, 0px)`. Reference: `history.component.scss:3–10`. (SCSS audit §3.1)
 - [ ] **`styles.scss`** — Add `--ff-placeholder: #3a3a3a` to the `:root` token block. Then replace all six hardcoded `#3a3a3a` `::placeholder` values across `ratings`, `movie-nights`, `suggest-new`, `history`, `admin` component SCSS files. (SCSS audit §2.7)
 - [ ] **`suggestions.component.scss:14` and `suggest-new.component.scss:14`** — Move `padding-bottom: env(safe-area-inset-bottom, 0px)` from the inner flex container up to the `:host` block. (SCSS audit §3.2)
@@ -38,12 +38,12 @@ Structural improvements that reduce duplication and prevent new instances of the
 
 ### New shared TypeScript utilities to create
 
-- [ ] **`SupabaseService.getClientOrNull()`** — Add one method to `SupabaseService`; then remove the per-service `private get client()` try/catch from all 9 services (`admin`, `omdb`, `ratings`, `suggestions`, `history`, `movie-nights`, `profile`, `bulk-import`, `stats`). (TS audit §2.2)
-- [ ] **`shared/util/destroy.ts`** — Create `DestroyComponent` base class with `protected readonly destroy$` and `ngOnDestroy`. Remove the boilerplate from all 8+ components that currently declare it manually. (TS audit §2.1)
-- [ ] **`shared/services/navigation.service.ts`** — Create `NavigationService` with `goBack()` and `goHome()`. Remove the per-component `goBack` / `goHome` / `navigate` methods from 10 components. (TS audit §2.3)
-- [ ] **`shared/util/language.ts`** — Extract `isNonEnglish(lang)`. Remove inline copies from `suggestions.component.ts:158`, `movie-nights.component.ts:202`, `history.component.ts:187`. (TS audit §2.4)
-- [ ] **`shared/util/date.ts`** — Extract `parseYyyyMmDd(s)`. Standardise the manual-split and `new Date(iso)` variants in `ratings.component.ts:160`, `history.component.ts:204`, `profile.service.ts:275`. (TS audit §2.5)
-- [ ] **`shared/util/score.ts`** — Extract `scoreColor(score)`. Remove inline copies from `history.component.ts:197`, `stats.component.ts:53`, `profile-contrarian.component.ts:14`. (TS audit §2.6)
+- [x] **`SupabaseService.getClientOrNull()`** — Add one method to `SupabaseService`; then remove the per-service `private get client()` try/catch from all 9 services (`admin`, `omdb`, `ratings`, `suggestions`, `history`, `movie-nights`, `profile`, `bulk-import`, `stats`). (TS audit §2.2)
+- [x] **`shared/util/destroy.ts`** — Create `DestroyComponent` base class with `protected readonly destroy$` and `ngOnDestroy`. Remove the boilerplate from all 8+ components that currently declare it manually. (TS audit §2.1)
+- [x] **`shared/services/navigation.service.ts`** — Create `NavigationService` with `goBack()` and `goHome()`. Remove the per-component `goBack` / `goHome` / `navigate` methods from 10 components. (TS audit §2.3)
+- [x] **`shared/util/language.ts`** — Extract `isNonEnglish(lang)`. Remove inline copies from `suggestions.component.ts:158`, `movie-nights.component.ts:202`, `history.component.ts:187`. (TS audit §2.4)
+- [x] **`shared/util/date.ts`** — Extract `parseYyyyMmDd(s)`. Standardise the manual-split and `new Date(iso)` variants in `ratings.component.ts:160`, `history.component.ts:204`. (TS audit §2.5)
+- [x] **`shared/util/score.ts`** — Extract `scoreColor(score)`. Remove inline copies from `history.component.ts:197`, `stats.component.ts:53`. (TS audit §2.6)
 
 ### New global SCSS utilities to add to `styles.scss`
 

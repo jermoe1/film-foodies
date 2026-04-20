@@ -1,15 +1,15 @@
 import {
   Component,
   OnInit,
-  OnDestroy,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
 } from '@angular/core';
-import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MemberService } from '../core/services/member.service';
 import { RatingsService, PendingRating } from './ratings.service';
+import { DestroyComponent } from '../shared/util/destroy';
+import { NavigationService } from '../shared/services/navigation.service';
+import { parseYyyyMmDd } from '../shared/util/date';
 
 export const PRESET_TAGS = [
   'Crowd Pleaser',
@@ -30,7 +30,7 @@ type RatingStep = 1 | 2 | 3;
   styleUrls: ['./ratings.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RatingsComponent implements OnInit, OnDestroy {
+export class RatingsComponent extends DestroyComponent implements OnInit {
   step: RatingStep = 1;
   pending: PendingRating | null = null;
   loading = true;
@@ -48,14 +48,12 @@ export class RatingsComponent implements OnInit, OnDestroy {
 
   readonly presetTags = PRESET_TAGS;
 
-  private readonly destroy$ = new Subject<void>();
-
   constructor(
-    private router: Router,
+    private nav: NavigationService,
     private ratingsService: RatingsService,
     private memberService: MemberService,
     private cdr: ChangeDetectorRef,
-  ) {}
+  ) { super(); }
 
   ngOnInit(): void {
     const memberId = this.memberService.currentMember?.id;
@@ -78,11 +76,6 @@ export class RatingsComponent implements OnInit, OnDestroy {
         }
         this.cdr.markForCheck();
       });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   // ── Step navigation ──────────────────────────────────────────────────────────
@@ -144,7 +137,7 @@ export class RatingsComponent implements OnInit, OnDestroy {
         if (success) {
           this.submitSuccess = true;
           this.cdr.markForCheck();
-          setTimeout(() => this.router.navigate(['/home']), 1100);
+          setTimeout(() => this.nav.goHome(), 1100);
         } else {
           this.submitError = 'Could not save your rating. Please try again.';
           this.cdr.markForCheck();
@@ -156,16 +149,12 @@ export class RatingsComponent implements OnInit, OnDestroy {
 
   get formattedDate(): string {
     if (!this.pending?.date) return '';
-    // date is YYYY-MM-DD — parse as UTC to avoid timezone shift
-    const [y, m, d] = this.pending.date.split('-').map(Number);
-    return new Date(y, m - 1, d).toLocaleDateString('en-US', {
+    return parseYyyyMmDd(this.pending.date).toLocaleDateString('en-US', {
       month: 'long',
       day: 'numeric',
       year: 'numeric',
     });
   }
 
-  goHome(): void {
-    this.router.navigate(['/home']);
-  }
+  goHome(): void { this.nav.goHome(); }
 }

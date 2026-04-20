@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { Location } from '@angular/common';
+import { NavigationService } from '../shared/services/navigation.service';
 import { forkJoin } from 'rxjs';
 import { MemberService, Member } from '../core/services/member.service';
 import { ProfileService } from './profile.service';
@@ -32,7 +32,7 @@ export class ProfileComponent implements OnInit {
   suggestions: PendingSuggestion[] = [];
 
   constructor(
-    private location: Location,
+    private nav: NavigationService,
     private memberService: MemberService,
     private profileService: ProfileService,
     private cdr: ChangeDetectorRef,
@@ -76,7 +76,5 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  goBack(): void {
-    this.location.back();
-  }
+  goBack(): void { this.nav.goBack(); }
 }

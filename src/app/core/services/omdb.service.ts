@@ -49,9 +49,7 @@ export class OmdbService {
     return localStorage.getItem(OMDB_KEY_STORAGE);
   }
 
-  private get client() {
-    try { return this.supabase.getClient(); } catch { return null; }
-  }
+  private get client() { return this.supabase.getClientOrNull(); }
 
   /**
    * Search for movies by title.

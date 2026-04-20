@@ -4,8 +4,8 @@ import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
 } from '@angular/core';
-import { Router } from '@angular/router';
 import { SupabaseService } from '../core/services/supabase.service';
+import { NavigationService } from '../shared/services/navigation.service';
 import { MemberService, Member } from '../core/services/member.service';
 import { AuthService } from '../core/services/auth.service';
 import { ThemeService, Theme } from '../core/services/theme.service';
@@ -55,7 +55,7 @@ export class AdminComponent implements OnInit {
     private authService: AuthService,
     readonly themeService: ThemeService,
     private adminService: AdminService,
-    private router: Router,
+    private nav: NavigationService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -76,9 +76,7 @@ export class AdminComponent implements OnInit {
   get isConfigured(): boolean { return this.supabaseService.isConfigured; }
   get isAdmin(): boolean { return this.memberService.isAdmin; }
 
-  goBack(): void {
-    this.router.navigate(['/home']);
-  }
+  goBack(): void { this.nav.goHome(); }
 
   // ── Theme ─────────────────────────────────────────────────────────────────
 

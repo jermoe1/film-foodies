@@ -8,9 +8,7 @@ import { SuggestionCard, SortOption } from './suggestions.types';
 export class SuggestionsService {
   constructor(private supabase: SupabaseService) {}
 
-  private get client() {
-    try { return this.supabase.getClient(); } catch { return null; }
-  }
+  private get client() { return this.supabase.getClientOrNull(); }
 
   /**
    * Fetch all pending (non-deleted) suggestions, joined with movie data,

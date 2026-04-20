@@ -1,11 +1,9 @@
 import {
   Component,
   OnInit,
-  OnDestroy,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
 } from '@angular/core';
-import { Router } from '@angular/router';
 import { Subject, merge } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/operators';
 import { MemberService } from '../core/services/member.service';
@@ -13,6 +11,8 @@ import { OmdbService } from '../core/services/omdb.service';
 import { ContentWarningService } from '../core/services/content-warning.service';
 import { SuggestionsService } from './suggestions.service';
 import { ContentWarning, MovieSearchResult } from './suggestions.types';
+import { DestroyComponent } from '../shared/util/destroy';
+import { NavigationService } from '../shared/services/navigation.service';
 
 @Component({
   selector: 'app-suggest-new',
@@ -20,7 +20,7 @@ import { ContentWarning, MovieSearchResult } from './suggestions.types';
   styleUrls: ['./suggest-new.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SuggestNewComponent implements OnInit, OnDestroy {
+export class SuggestNewComponent extends DestroyComponent implements OnInit {
   query = '';
   results: MovieSearchResult[] = [];
   isSearching = false;
@@ -32,18 +32,17 @@ export class SuggestNewComponent implements OnInit, OnDestroy {
   submitError: string | null = null;
   submitSuccess = false;
 
-  private readonly destroy$ = new Subject<void>();
   private readonly query$ = new Subject<string>();
   private readonly searchNow$ = new Subject<string>();
 
   constructor(
+    private nav: NavigationService,
     private omdbService: OmdbService,
     private contentWarningService: ContentWarningService,
     private suggestionsService: SuggestionsService,
     private memberService: MemberService,
-    private router: Router,
     private cdr: ChangeDetectorRef
-  ) {}
+  ) { super(); }
 
   ngOnInit(): void {
     merge(
@@ -69,11 +68,6 @@ export class SuggestNewComponent implements OnInit, OnDestroy {
         this.isSearching = false;
         this.cdr.markForCheck();
       });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   onQueryChange(value: string): void {
@@ -152,7 +146,7 @@ export class SuggestNewComponent implements OnInit, OnDestroy {
           if (id) {
             this.submitSuccess = true;
             this.cdr.markForCheck();
-            setTimeout(() => this.router.navigate(['/suggest']), 800);
+            setTimeout(() => this.nav.goTo('/suggest'), 800);
           } else {
             this.submitError = 'Could not add the suggestion. Please try again.';
             this.cdr.markForCheck();
@@ -185,7 +179,7 @@ export class SuggestNewComponent implements OnInit, OnDestroy {
     }
   }
 
-  goBack(): void { this.router.navigate(['/suggest']); }
+  goBack(): void { this.nav.goTo('/suggest'); }
 
   trackByImdbId(_: number, r: MovieSearchResult): string { return r.imdbId; }
 }

@@ -1,15 +1,17 @@
 import {
   Component,
   OnInit,
-  OnDestroy,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
 } from '@angular/core';
-import { Router } from '@angular/router';
-import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { MemberService } from '../core/services/member.service';
 import { HistoryService, HistoryCard, HistoryNote, HistoryFact, HistoryAttendee } from './history.service';
+import { DestroyComponent } from '../shared/util/destroy';
+import { NavigationService } from '../shared/services/navigation.service';
+import { isNonEnglish } from '../shared/util/language';
+import { scoreColor } from '../shared/util/score';
+import { parseYyyyMmDd } from '../shared/util/date';
 
 type HistoryTab = 'details' | 'trivia' | 'notes';
 
@@ -19,7 +21,7 @@ type HistoryTab = 'details' | 'trivia' | 'notes';
   styleUrls: ['./history.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HistoryComponent implements OnInit, OnDestroy {
+export class HistoryComponent extends DestroyComponent implements OnInit {
   nights: HistoryCard[] = [];
   loading = true;
 
@@ -43,14 +45,12 @@ export class HistoryComponent implements OnInit, OnDestroy {
   deleteConfirmId: string | null = null;
   deleteSubmitting = false;
 
-  private readonly destroy$ = new Subject<void>();
-
   constructor(
-    private router: Router,
+    private nav: NavigationService,
     private historyService: HistoryService,
     private memberService: MemberService,
     private cdr: ChangeDetectorRef,
-  ) {}
+  ) { super(); }
 
   ngOnInit(): void {
     this.historyService
@@ -61,11 +61,6 @@ export class HistoryComponent implements OnInit, OnDestroy {
         this.loading = false;
         this.cdr.markForCheck();
       });
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
   }
 
   // ── Card expand / collapse ───────────────────────────────────────────────────
@@ -221,25 +216,16 @@ export class HistoryComponent implements OnInit, OnDestroy {
 
   // ── Helpers ──────────────────────────────────────────────────────────────────
 
-  isNonEnglish(lang: string | null): boolean {
-    if (!lang) return false;
-    const lower = lang.toLowerCase();
-    return !lower.startsWith('english') || lower.includes(',');
-  }
+  isNonEnglish(lang: string | null): boolean { return isNonEnglish(lang); }
 
   primaryLanguage(lang: string): string {
     return lang.split(', ')[0];
   }
 
-  scoreColor(score: number): string {
-    if (score >= 7.5) return '#4a9a5a';
-    if (score >= 5.0) return '#d4a03a';
-    return '#c04040';
-  }
+  scoreColor(score: number): string { return scoreColor(score); }
 
   formatDate(dateStr: string): string {
-    const [y, m, d] = dateStr.split('-').map(Number);
-    return new Date(y, m - 1, d).toLocaleDateString('en-US', {
+    return parseYyyyMmDd(dateStr).toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
       year: 'numeric',
@@ -273,9 +259,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
     return note.memberId === (this.memberService.currentMember?.id ?? '');
   }
 
-  goBack(): void {
-    this.router.navigate(['/home']);
-  }
+  goBack(): void { this.nav.goHome(); }
 
   trackById(_: number, item: { id: string }): string {
     return item.id;

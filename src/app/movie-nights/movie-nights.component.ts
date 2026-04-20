@@ -1,17 +1,19 @@
 import {
   Component,
   OnInit,
-  OnDestroy,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
 } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { Subject, forkJoin, of, merge } from 'rxjs';
 import { debounceTime, distinctUntilChanged, switchMap, takeUntil } from 'rxjs/operators';
 import { MemberService, Member } from '../core/services/member.service';
 import { OmdbService } from '../core/services/omdb.service';
 import { MovieNightsService, MovieNightPayload } from './movie-nights.service';
 import { MovieSearchResult } from '../suggestions/suggestions.types';
+import { DestroyComponent } from '../shared/util/destroy';
+import { NavigationService } from '../shared/services/navigation.service';
+import { isNonEnglish } from '../shared/util/language';
 
 export const WATCH_PLATFORMS = [
   'Netflix', 'Hulu', 'Max', 'Disney+', 'Amazon Prime Video',
@@ -34,7 +36,7 @@ export const SUBTITLE_OPTIONS = [
   styleUrls: ['./movie-nights.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MovieNightsComponent implements OnInit, OnDestroy {
+export class MovieNightsComponent extends DestroyComponent implements OnInit {
   // Movie search
   query = '';
   results: MovieSearchResult[] = [];
@@ -74,18 +76,17 @@ export class MovieNightsComponent implements OnInit, OnDestroy {
   readonly cutVersions = CUT_VERSIONS;
   readonly subtitleOptions = SUBTITLE_OPTIONS;
 
-  private readonly destroy$ = new Subject<void>();
   private readonly query$ = new Subject<string>();
   private readonly searchNow$ = new Subject<string>();
 
   constructor(
+    private nav: NavigationService,
     private route: ActivatedRoute,
-    private router: Router,
     private memberService: MemberService,
     private omdbService: OmdbService,
     private movieNightsService: MovieNightsService,
     private cdr: ChangeDetectorRef,
-  ) {}
+  ) { super(); }
 
   ngOnInit(): void {
     // Set up movie search pipeline:
@@ -145,11 +146,6 @@ export class MovieNightsComponent implements OnInit, OnDestroy {
       });
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
   // ── Movie search ─────────────────────────────────────────────────────────────
 
   onQueryChange(value: string): void {
@@ -200,10 +196,7 @@ export class MovieNightsComponent implements OnInit, OnDestroy {
 
   /** Show subtitle option only for non-English films. */
   get isNonEnglish(): boolean {
-    const lang = this.selectedMovie?.movieLanguage;
-    if (!lang) return false;
-    const lower = lang.toLowerCase();
-    return !lower.startsWith('english') || lower.includes(',');
+    return isNonEnglish(this.selectedMovie?.movieLanguage ?? null);
   }
 
   // ── Submit ───────────────────────────────────────────────────────────────────
@@ -279,7 +272,7 @@ export class MovieNightsComponent implements OnInit, OnDestroy {
             this.isSubmitting = false;
             this.submitSuccess = true;
             this.cdr.markForCheck();
-            setTimeout(() => this.router.navigate(['/home']), 900);
+            setTimeout(() => this.nav.goHome(), 900);
           });
         });
     };
@@ -318,7 +311,7 @@ export class MovieNightsComponent implements OnInit, OnDestroy {
   }
 
   goBack(): void {
-    this.router.navigate(['/home']);
+    this.nav.goHome();
   }
 
   trackByMemberId(_: number, m: Member): string { return m.id; }
