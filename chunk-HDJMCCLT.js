@@ -1,0 +1,1 @@
+import{E as r,e}from"./chunk-QBVJYZ7J.js";var c=(()=>{class t{constructor(){this.destroy$=new e}ngOnDestroy(){this.destroy$.next(),this.destroy$.complete()}static{this.\u0275fac=function(i){return new(i||t)}}static{this.\u0275dir=r({type:t})}}return t})();export{c as a};
