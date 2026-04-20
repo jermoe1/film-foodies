@@ -566,3 +566,76 @@
   &:focus-visible { outline: 2px solid #4070d0; outline-offset: 2px; }
 }
 
+// ── Delete row ────────────────────────────────────────────────────────────────
+
+.hist__delete-row {
+  padding: 12px 16px 16px;
+  border-top: 1px solid var(--ff-border-sub);
+  display: flex;
+  justify-content: center;
+}
+
+.hist__delete-btn {
+  background: none;
+  border: none;
+  font-size: 0.75rem;
+  color: var(--ff-text-7);
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  padding: 4px 8px;
+  border-radius: 4px;
+
+  &:hover { color: #c04040; }
+  &:focus-visible { outline: 2px solid #c04040; outline-offset: 2px; }
+}
+
+.hist__delete-confirm {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.hist__delete-confirm-msg {
+  font-size: 0.75rem;
+  color: var(--ff-text-4);
+  text-align: center;
+  line-height: 1.4;
+}
+
+.hist__delete-confirm-actions {
+  display: flex;
+  gap: 8px;
+  width: 100%;
+}
+
+.hist__delete-cancel {
+  flex: 1;
+  padding: 8px 14px;
+  background: transparent;
+  border: 1px solid var(--ff-border);
+  border-radius: 6px;
+  color: var(--ff-text-5);
+  font-size: 0.8125rem;
+  cursor: pointer;
+  &:disabled { opacity: 0.4; cursor: default; }
+  &:active { background: var(--ff-bg-surface); }
+  &:focus-visible { outline: 2px solid #4070d0; outline-offset: 2px; }
+}
+
+.hist__delete-confirm-btn {
+  flex: 1;
+  padding: 8px 14px;
+  background: rgba(192, 64, 64, 0.1);
+  border: 1px solid rgba(192, 64, 64, 0.35);
+  border-radius: 6px;
+  color: #c04040;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  &:disabled { opacity: 0.4; cursor: default; }
+  &:focus-visible { outline: 2px solid #c04040; outline-offset: 2px; }
+}
+

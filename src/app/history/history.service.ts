@@ -272,4 +272,20 @@ export class HistoryService {
       catchError(() => of(false))
     );
   }
+
+  /** Permanently delete a movie night and all its related rows. */
+  deleteNight(movieNightId: string): Observable<boolean> {
+    const client = this.client;
+    if (!client) return of(false);
+
+    return from(
+      client
+        .from('movie_nights')
+        .delete()
+        .eq('id', movieNightId)
+    ).pipe(
+      map(({ error }) => !error),
+      catchError(() => of(false))
+    );
+  }
 }

@@ -39,6 +39,10 @@ export class HistoryComponent implements OnInit, OnDestroy {
   editNoteText = '';
   editSubmitting = false;
 
+  // Delete state
+  deleteConfirmId: string | null = null;
+  deleteSubmitting = false;
+
   private readonly destroy$ = new Subject<void>();
 
   constructor(
@@ -69,6 +73,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
   toggleExpand(id: string): void {
     if (this.expandedId === id) {
       this.expandedId = null;
+      this.deleteConfirmId = null;
       this.cdr.markForCheck();
       return;
     }
@@ -76,6 +81,7 @@ export class HistoryComponent implements OnInit, OnDestroy {
     this.activeTab = 'details';
     this.newNoteText = '';
     this.editingNoteId = null;
+    this.deleteConfirmId = null;
     // Eagerly load notes so the tab badge count is ready
     if (!this.notesMap.has(id) && !this.notesLoadingSet.has(id)) {
       this.loadNotes(id);
@@ -177,6 +183,37 @@ export class HistoryComponent implements OnInit, OnDestroy {
           this.notesMap.set(night.id, notes);
           this.editingNoteId = null;
           this.editNoteText = '';
+        }
+        this.cdr.markForCheck();
+      });
+  }
+
+  // ── Delete ───────────────────────────────────────────────────────────────────
+
+  confirmDelete(nightId: string): void {
+    this.deleteConfirmId = nightId;
+    this.cdr.markForCheck();
+  }
+
+  cancelDelete(): void {
+    this.deleteConfirmId = null;
+    this.cdr.markForCheck();
+  }
+
+  executeDelete(nightId: string): void {
+    if (this.deleteSubmitting) return;
+    this.deleteSubmitting = true;
+    this.cdr.markForCheck();
+
+    this.historyService
+      .deleteNight(nightId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((ok) => {
+        this.deleteSubmitting = false;
+        if (ok) {
+          this.nights = this.nights.filter((n) => n.id !== nightId);
+          this.expandedId = null;
+          this.deleteConfirmId = null;
         }
         this.cdr.markForCheck();
       });

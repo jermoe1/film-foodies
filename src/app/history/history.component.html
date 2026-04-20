@@ -363,6 +363,38 @@
           </ng-container>
         </div>
 
+        <!-- ── Delete ─────────────────────────────────────────────────── -->
+        <div class="hist__delete-row" (click)="$event.stopPropagation()">
+
+          <!-- Trigger button (hidden while confirming) -->
+          <button
+            *ngIf="deleteConfirmId !== night.id"
+            class="hist__delete-btn"
+            (click)="confirmDelete(night.id)"
+          >Delete movie night</button>
+
+          <!-- Inline confirmation -->
+          <div *ngIf="deleteConfirmId === night.id" class="hist__delete-confirm">
+            <span class="hist__delete-confirm-msg">Delete this movie night? This cannot be undone.</span>
+            <div class="hist__delete-confirm-actions">
+              <button
+                class="hist__delete-cancel"
+                [disabled]="deleteSubmitting"
+                (click)="cancelDelete()"
+              >Cancel</button>
+              <button
+                class="hist__delete-confirm-btn"
+                [disabled]="deleteSubmitting"
+                (click)="executeDelete(night.id)"
+              >
+                <span *ngIf="!deleteSubmitting">Delete</span>
+                <span *ngIf="deleteSubmitting">Deleting…</span>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
       </div>
       <!-- end expanded detail -->
 
