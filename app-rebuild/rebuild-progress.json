@@ -1,0 +1,104 @@
+{
+  "session": {
+    "started": "2026-04-20",
+    "status": "complete",
+    "lastUpdated": "2026-04-23",
+    "resumeNote": "All 8 documents fully populated. Codebase explored and all persona discussions recorded. No further work needed unless scope changes."
+  },
+  "codebaseExploration": {
+    "status": "complete",
+    "summary": "Angular 18.2, Supabase (PostgreSQL), HashLocationStrategy, OnPush CD, RxJS BehaviorSubjects, OMDB + DTDD APIs, GitHub Pages hosting. 13 routes, ~15 services, 20+ components."
+  },
+  "documents": {
+    "constraints.md": {
+      "status": "complete",
+      "personas": ["ProductOwner", "DatabaseArchitect", "Developer", "UIUX", "QA", "CasualUser"],
+      "keyDecisions": [
+        "HashLocationStrategy stays (GitHub Pages)",
+        "Soft deletes stay for undo UX",
+        "movie_cast column stays as comma-string",
+        "Discovery AI labelling rule preserved",
+        "100dvh + env(safe-area-inset-bottom) mobile viewport fix"
+      ]
+    },
+    "data-model.md": {
+      "status": "complete",
+      "personas": ["DatabaseArchitect", "Developer", "ProductOwner"],
+      "keyDecisions": [
+        "Normalize movie_cast to actors table for better profile stats",
+        "Add RLS policies explicitly documented",
+        "Add indexes on foreign keys and frequently queried columns",
+        "Retain soft delete pattern on suggestions",
+        "Add user_preferences table for per-member settings"
+      ]
+    },
+    "architecture.md": {
+      "status": "complete",
+      "personas": ["Developer", "DatabaseArchitect", "QA"],
+      "keyDecisions": [
+        "Migrate from NgModule to standalone components in rebuild",
+        "Adopt Angular signals for state (replace BehaviorSubjects)",
+        "Keep OnPush CD strategy throughout",
+        "Keep lazy loading per feature",
+        "Move profile stat queries to Supabase RPC functions",
+        "Add httpClient-based interceptor layer for error handling"
+      ]
+    },
+    "routes.md": {
+      "status": "complete",
+      "personas": ["UIUX", "ProductOwner", "Developer"],
+      "keyDecisions": [
+        "All 13 routes documented with guard, component, query params, data deps",
+        "Add /settings route separate from /admin",
+        "Keep /admin unguarded for initial setup"
+      ]
+    },
+    "components.md": {
+      "status": "complete",
+      "personas": ["UIUX", "Developer", "QA"],
+      "keyDecisions": [
+        "All smart + dumb components documented",
+        "Extract shared RatingBadge, ScoreChip, MemberAvatar as reusable",
+        "Document all @Input/@Output contracts",
+        "Flag Discovery as stub needing real implementation"
+      ]
+    },
+    "spec.md": {
+      "status": "complete",
+      "personas": ["ProductOwner", "CasualUser", "QA", "UIUX"],
+      "keyDecisions": [
+        "Full feature list with user stories",
+        "Acceptance criteria per feature",
+        "Improvement suggestions from user + QA perspectives"
+      ]
+    },
+    "style-guide.md": {
+      "status": "complete",
+      "personas": ["UIUX", "Developer", "CasualUser"],
+      "keyDecisions": [
+        "All 6 themes documented with hex values",
+        "Full CSS token list",
+        "Typography scale defined",
+        "Spacing scale defined",
+        "Score color logic documented"
+      ]
+    },
+    "deploy.md": {
+      "status": "complete",
+      "personas": ["Developer", "ProductOwner"],
+      "keyDecisions": [
+        "GitHub Actions pipeline documented step by step",
+        "All environment variables/secrets listed",
+        "HashRouter + base-href requirements documented"
+      ]
+    }
+  },
+  "personaRoster": {
+    "ProductOwner": "PO — feature scope, user stories, priorities, what matters to the group",
+    "DatabaseArchitect": "DBA — schema design, normalization, RLS, indexes, RPCs",
+    "Developer": "Dev — Angular patterns, code quality, state mgmt, tech choices",
+    "UIUX": "UX — flows, accessibility, theming, responsiveness, delight",
+    "QA": "QA — edge cases, error states, test coverage gaps",
+    "CasualUser": "User — real pain points, what delights, what confuses"
+  }
+}
